@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ramesh AI Fun Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --bg:#0f2027;--card:rgba(255,255,255,.12);
+  --text:#fff;--accent:#00d4ff;
+}
+.light{--bg:#f2f2f2;--card:#fff;--text:#000;}
+.retro{font-family:"Courier New",monospace;filter:contrast(1.2) saturate(1.4);}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial;transition:.4s;overflow-x:hidden;}
+header{text-align:center;padding:20px;}
+button{padding:10px 14px;margin:6px;border:none;border-radius:6px;background:var(--accent);cursor:pointer;position:relative;overflow:hidden;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;padding:20px;}
+.card{background:var(--card);padding:20px;border-radius:12px;text-align:center;cursor:pointer;transition:.3s;}
+.card:hover{transform:scale(1.07);}
+.section{display:none;padding:20px;text-align:center;animation:fade .4s;}
+@keyframes fade{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#loader{display:none;margin:10px;}
+input{padding:10px;margin:6px;}
+footer{text-align:center;padding:15px;opacity:.8;}
+.output{margin:10px 0;padding:10px;background:var(--card);border-radius:6px;}
+canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<header>
+<h1 id="title">🤖 Ramesh AI Fun Hub</h1>
+<p>Central Hub</p>
+<button onclick="toggleMode()">🌗 Dark/Light</button>
+<button onclick="toggleRetro()">🕹 Retro</button>
+<button onclick="fakeInstall()">📦 Install App</button>
+<p>Visits: <span id="visits">0</span></p>
+</header>
+
+<!-- HUB -->
+<div id="hub" class="grid">
+  <div class="card" onclick="openTool('business')">🏢 Business Name</div>
+  <div class="card" onclick="openTool('slogan')">📢 Slogan Generator</div>
+  <div class="card" onclick="openTool('excuse')">😆 Excuse Generator</div>
+  <div class="card" onclick="openTool('idea')">💡 Idea Generator</div>
+  <div class="card" onclick="openTool('emoji')">🎨 Random Emoji</div>
+  <div class="card" onclick="openTool('riddle')">🧩 Riddle</div>
+  <div class="card" onclick="openTool('games')">🎮 Games</div>
+  <div class="card" onclick="openTool('analytics')">📊 Analytics</div>
+  <div class="card" onclick="openTool('admin')">🔐 Admin Panel</div>
+</div>
+
+<!-- GENERATORS -->
+<div id="business" class="section">
+<h2>🏢 Business Name Generator</h2>
+<input id="bizInput" placeholder="Type of business">
+<button onclick="genBusiness(this)">Generate</button>
+<div class="output" id="bizOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<div id="slogan" class="section">
+<h2>📢 Slogan Generator</h2>
+<button onclick="genSlogan(this)">Generate</button>
+<div class="output" id="sloganOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<div id="excuse" class="section">
+<h2>😆 Excuse Generator</h2>
+<button onclick="genExcuse(this)">Generate</button>
+<div class="output" id="excuseOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<div id="idea" class="section">
+<h2>💡 Idea Generator</h2>
+<button onclick="genIdea(this)">Generate</button>
+<div class="output" id="ideaOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<div id="emoji" class="section">
+<h2>🎨 Random Emoji Generator</h2>
+<button onclick="genEmoji(this)">Generate</button>
+<div class="output" id="emojiOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<div id="riddle" class="section">
+<h2>🧩 Riddle Generator</h2>
+<button onclick="genRiddle(this)">Generate</button>
+<div class="output" id="riddleOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<!-- GAMES -->
+<div id="games" class="section">
+<h2>🎮 Games</h2>
+<button onclick="openMiniGame('guess')">🎲 Guess the Number</button>
+<button onclick="openMiniGame('click')">🖱 Click Speed Test</button>
+<button onclick="openMiniGame('dice')">🎲 Dice Roller</button>
+<button onclick="openMiniGame('rps')">✊✋✌ Rock Paper Scissors</button>
+<div id="gameArea"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="section">
+<h2>📊 Analytics Dashboard</h2>
+<button onclick="showAnalytics(this)">Refresh Data</button>
+<div class="output" id="analyticsOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="section">
+<h2>🔐 Admin Panel</h2>
+<input type="password" id="adminPass" placeholder="Enter password">
+<button onclick="checkAdmin(this)">Login</button>
+<div class="output" id="adminOut"></div>
+<button onclick="goBack()">⬅ Back</button>
+</div>
+
+<!-- EASTER EGG -->
+<div id="egg" class="section">
+<h2>🥚 SECRET ULTRA MODE</h2>
+<p>🎉 You found the hidden mode! Ultra AI fun unlocked 😎</p>
+<button onclick="goBack()">Return</button>
+</div>
+
+<footer>Fun demo only — offline, single HTML file!</footer>
+
+<script>
+// Visitor counter
+let v = localStorage.getItem("visits")||0; v++; localStorage.setItem("visits",v);
+document.getElementById("visits").innerText=v;
+
+// Modes
+function toggleMode(){document.body.classList.toggle("light")}
+function toggleRetro(){document.body.classList.toggle("retro")}
+function fakeInstall(){alert("📦 App installed! Add to Home Screen for best experience");}
+
+// Navigation
+function hideAll(){document.querySelectorAll(".section").forEach(s=>s.style.display="none");}
+function openTool(id){hideAll(); hub.style.display="none"; document.getElementById(id).style.display="block";}
+function goBack(){hideAll(); hub.style.display="grid";}
+
+// Confetti effect
+const canvas=document.getElementById("confetti"); const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+let confettis=[];
+function createConfetti(x,y){
+  for(let i=0;i<30;i++){
+    confettis.push({x:x, y:y, r:Math.random()*6+2, dx:(Math.random()-0.5)*6, dy:(Math.random()-2)*-4, color:`hsl(${Math.random()*360},100%,50%)`});
+  }
+}
+function drawConfetti(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  confettis.forEach((c,i)=>{
+    ctx.fillStyle=c.color; ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fill();
+    c.x+=c.dx; c.y+=c.dy; c.dy+=0.1; if(c.y>canvas.height){confettis.splice(i,1);}
+  });
+  requestAnimationFrame(drawConfetti);
+}
+drawConfetti();
+
+// Particle effect on button
+function spark(btn){
+  const rect=btn.getBoundingClientRect();
+  createConfetti(rect.left+rect.width/2,rect.top+rect.height/2);
+}
+
+// Generators
+function think(cb,btn){if(btn)spark(btn); setTimeout(cb,500);}
+function genBusiness(btn){think(()=>{let a=["Ramesh Enterprises","Ramesh Labs","NextGen Ramesh","Smart Ramesh","Ramesh Global","Ramesh Tech","Ramesh Innovations","Ramesh Solutions","Ramesh Factory","Ramesh Studio"]; let b=bizInput.value||"Business"; bizOut.innerText=a[Math.floor(Math.random()*a.length)]+" – "+b;},btn);}
+function genSlogan(btn){think(()=>{let a=["Built the Ramesh way","Quality you can trust","Big ideas, honest work","Innovation starts here","Ramesh delivers","Think Ramesh, Think Success","Powered by Ramesh","Smart, Fast, Ramesh"]; sloganOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
+function genExcuse(btn){think(()=>{let a=["AI went for chai ☕","Server felt lazy","Internet blinked","System needs motivation","Keyboard is sleeping","Laptop needed a break"]; excuseOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
+function genIdea(btn){think(()=>{let a=["Fun AI hub","Games + tools website","Random generator lab","Hidden Easter egg site","Emoji generator fun","Mini quiz hub","Retro terminal interface"]; ideaOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
+function genEmoji(btn){think(()=>{let emojis=["😎","🤖","🎉","💡","🚀","😂","🔥","🧩","🎨","🕹️","⚡","🥳"]; let out=""; for(let i=0;i<5;i++){out+=emojis[Math.floor(Math.random()*emojis.length)]+" ";} emojiOut.innerText=out;},btn);}
+function genRiddle(btn){think(()=>{let riddles=[["What has keys but can't open locks?","A piano"],["What runs but never walks?","A river"],["I speak without a mouth and hear without ears. What am I?","An echo"],["What has hands but can’t clap?","A clock"]]; let r=riddles[Math.floor(Math.random()*riddles.length)]; riddleOut.innerText=r[0]+" (Answer: "+r[1]+")";},btn);}
+
+// Games
+function openMiniGame(game){
+let area=document.getElementById("gameArea"); area.innerHTML="";
+if(game=="guess"){
+  let target=Math.floor(Math.random()*50)+1;
+  area.innerHTML='<p>Guess a number 1-50:</p><input type="number" id="guessInput"><button onclick="checkGuess('+target+',this)">Submit</button><div class="output" id="guessOut"></div>';
+}
+if(game=="click"){
+  let clicks=0; let time=5000; let timer;
+  area.innerHTML='<p>Click the button as fast as you can in 5 seconds!</p><button id="clickBtn">Click me!</button><div class="output" id="clickOut"></div>';
+  let btn=document.getElementById("clickBtn");
+  btn.onclick=()=>{clicks++; spark(btn);};
+  timer=setTimeout(()=>{document.getElementById("clickOut").innerText="Clicks: "+clicks; createConfetti(window.innerWidth/2,100);},time);
+}
+if(game=="dice"){
+  area.innerHTML='<button onclick="rollDice(1,this)">Roll 1 Die</button><button onclick="rollDice(2,this)">Roll 2 Dice</button><div class="output" id="diceOut"></div>';
+}
+if(game=="rps"){
+  area.innerHTML='<p>Choose:</p><button onclick="playRPS(\'Rock\',this)">Rock</button><button onclick="playRPS(\'Paper\',this)">Paper</button><button onclick="playRPS(\'Scissors\',this)">Scissors</button><div class="output" id="rpsOut"></div>';
+}
+}
+function checkGuess(target,btn){let val=+document.getElementById("guessInput").value; let out=document.getElementById("guessOut"); if(val==target){out.innerText="🎉 Correct! The number was "+target; createConfetti(window.innerWidth/2,100);} else if(val>target){out.innerText="Too high!";} else{out.innerText="Too low!";} spark(btn);}
+function rollDice(n,btn){let out=document.getElementById("diceOut"); let res=[]; for(let i=0;i<n;i++){res.push(Math.floor(Math.random()*6)+1);} out.innerText="You rolled: "+res.join(", "); spark(btn);}
+function playRPS(choice,btn){let options=["Rock","Paper","Scissors"]; let comp=options[Math.floor(Math.random()*3)]; let out=document.getElementById("rpsOut"); let result=(choice==comp)?"Draw":(choice=="Rock"&&comp=="Scissors"||choice=="Paper"&&comp=="Rock"||choice=="Scissors"&&comp=="Paper")?"You Win!":"You Lose!"; out.innerText="You: "+choice+" | Computer: "+comp+" → "+result; if(result=="You Win!") createConfetti(window.innerWidth/2,100); spark(btn);}
+
+// Analytics
+function showAnalytics(btn){if(btn)spark(btn); let out=document.getElementById("analyticsOut"); out.innerText="AI Accuracy: "+(50+Math.floor(Math.random()*51))+"%\nUsers Online: "+(1+Math.floor(Math.random()*2000))+"\nBusiness Tool used: "+(Math.floor(Math.random()*100))+" times\nGames played: "+(Math.floor(Math.random()*50))+" times\nServer Status: "+["Online","Busy","Offline","Updating"][Math.floor(Math.random()*4)];}
+
+// Admin
+function checkAdmin(btn){if(btn)spark(btn); let val=document.getElementById("adminPass").value; let out=document.getElementById("adminOut"); if(val=="ramesh123"){out.innerText="✅ Admin unlocked! Secret tools are now visible.";} else{out.innerText="❌ Wrong password";}}
+
+// Easter Egg
+let clicks=0; title.onclick=()=>{clicks++; if(clicks==7){openTool("egg"); createConfetti(window.innerWidth/2,100); clicks=0;}}
+
+// Keyboard Shortcuts
+document.addEventListener("keydown", e=>{
+if(e.ctrlKey && e.shiftKey && e.key.toUpperCase()=="A") openTool("analytics");
+if(e.ctrlKey && e.shiftKey && e.key.toUpperCase()=="G") openTool("games");
+if(e.ctrlKey && e.shiftKey && e.key.toUpperCase()=="E") openTool("egg");
+if(e.ctrlKey && e.shiftKey && e.key.toUpperCase()=="R") toggleRetro();
+});
+</script>
+</body>
+</html>
