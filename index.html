@@ -11,137 +11,173 @@
   --text: #fff;
   --card: rgba(255,255,255,0.1);
   --online: #00ff88;
+  --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
+  --neon-glow: 0 0 20px #00f0ff, 0 0 40px #00f0ff, 0 0 60px #ff00ff;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: 'Arial', sans-serif; background: var(--bg-gradient);
+  font-family: 'Courier New', monospace; background: var(--bg-gradient);
   color: var(--text); overflow-x: hidden; cursor: none; min-height: 100vh;
 }
 #topbar {
   position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.9);
-  padding: 10px 20px; z-index: 100; display: flex; justify-content: space-between;
+  padding: 10px 20px; z-index: 1000; display: flex; justify-content: space-between;
   backdrop-filter: blur(20px); border-bottom: 2px solid var(--accent);
 }
-.nav-section { display: flex; gap: 10px; }
-.nav-btn, .login-btn {
-  background: var(--accent); color: #000; border: none; padding: 12px 24px;
+.nav-section { display: flex; gap: 10px; flex-wrap: wrap; }
+.nav-btn {
+  background: var(--accent); color: #000; border: none; padding: 12px 20px;
   border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s;
-  font-size: 14px; position: relative; overflow: hidden;
+  font-size: 14px; box-shadow: var(--neon-glow);
 }
-.nav-btn:hover, .login-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
-#profile { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 8px 15px; border-radius: 20px; }
-#online-count { background: var(--online); color: #000; padding: 5px 12px; border-radius: 15px; font-weight: bold; }
-section {
-  padding: 90px 20px 20px; max-width: 1200px; margin: 0 auto; min-height: 100vh;
-}
+.nav-btn:hover { transform: scale(1.05); filter: brightness(1.3); }
+#profile { display: flex; align-items: center; gap: 15px; background: var(--card); padding: 10px 20px; border-radius: 25px; }
+.profile-pic { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); box-shadow: var(--neon-glow); }
+#online-count { background: var(--online); color: #000; padding: 6px 12px; border-radius: 20px; font-weight: bold; animation: pulse 2s infinite; }
+section { padding: 100px 20px 20px; max-width: 1200px; margin: 0 auto; min-height: 100vh; }
 section:not(.active) { display: none; }
-section.active { display: block; }
-.game-card {
-  background: var(--card); padding: 25px; margin: 20px 0; border-radius: 20px;
-  backdrop-filter: blur(15px); box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-  text-align: center; border: 1px solid rgba(255,255,255,0.2);
+.hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+.game-card, .hub-card {
+  background: var(--card); padding: 30px; border-radius: 25px; backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2);
+  text-align: center; transition: all 0.4s;
 }
+.game-card:hover, .hub-card:hover { transform: translateY(-10px); box-shadow: 0 30px 80px rgba(0,0,0,0.5); }
 .btn-big {
-  font-size: 22px; padding: 18px 36px; background: linear-gradient(45deg, var(--accent), #00ff88);
-  border: none; border-radius: 50px; color: #000; cursor: pointer; margin: 10px;
-  transition: all 0.4s; position: relative; font-weight: bold; min-width: 200px;
+  font-size: 20px; padding: 20px 40px; background: linear-gradient(45deg, var(--accent), #00ff88);
+  border: none; border-radius: 50px; color: #000; cursor: pointer; margin: 15px;
+  transition: all 0.4s; font-weight: bold; width: 100%; box-shadow: var(--neon-glow);
 }
-.btn-big:hover { transform: translateY(-8px) scale(1.08); box-shadow: 0 20px 50px var(--accent); }
-.btn-big:active { animation: shake 0.3s; transform: scale(0.98); }
-@keyframes shake {
-  0%,100%{transform:translateX(0) scale(1.02);} 25%{transform:translateX(-3px) scale(1.02);}
-  75%{transform:translateX(3px) scale(1.02);}
+.btn-big:hover { transform: scale(1.05); filter: brightness(1.4); }
+
+/* EPIC LEADERBOARD */
+.leaderboard-container { background: rgba(0,0,0,0.7); border-radius: 30px; padding: 40px; backdrop-filter: blur(30px); }
+.podium { display: flex; justify-content: space-around; margin-bottom: 40px; }
+.podium-card {
+  text-align: center; padding: 30px 20px; border-radius: 20px; position: relative;
+  box-shadow: var(--neon-glow); animation: podiumGlow 2s infinite alternate;
 }
-.leaderboard, .quests {
-  background: linear-gradient(135deg, var(--card), rgba(0,255,136,0.1));
-  padding: 25px; border-radius: 20px; margin: 20px 0; border: 2px solid var(--accent);
+#gold.podium-card { background: linear-gradient(135deg, var(--gold), #FFA500); height: 200px; }
+#silver.podium-card { background: linear-gradient(135deg, var(--silver), #E0E0E0); height: 160px; }
+#bronze.podium-card { background: linear-gradient(135deg, var(--bronze), #D2691E); height: 140px; }
+.podium-rank { font-size: 4em; font-weight: bold; text-shadow: 0 0 20px #000; margin-bottom: 10px; }
+.player-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+.player-card {
+  display: flex; justify-content: space-between; padding: 20px; background: rgba(255,255,255,0.05);
+  border-radius: 15px; border-left: 4px solid var(--accent); transition: all 0.3s;
 }
-.leaderboard h3, .quests h3 { text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px var(--accent); }
-.leader-row, .quest-row {
-  display: flex; justify-content: space-between; padding: 12px; margin: 8px 0;
-  background: rgba(255,255,255,0.05); border-radius: 12px; transition: 0.3s;
+.player-card.you { background: rgba(0,255,136,0.2); border-left-color: var(--online); transform: scale(1.05); }
+.player-card:hover { background: rgba(255,255,255,0.15); transform: translateX(10px); }
+
+/* LOGIN MODAL */
+#login-modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+  z-index: 2000; display: none; backdrop-filter: blur(20px); align-items: center; justify-content: center;
 }
-.leader-row:hover { background: rgba(255,255,255,0.15); transform: translateX(5px); }
-.quest-progress { background: rgba(0,255,0,0.3); height: 8px; border-radius: 4px; margin-top: 5px; }
-#canvas { border: 4px solid var(--accent); border-radius: 15px; background: #111; display: block; margin: 20px auto; }
-#cursor-trail {
-  position: fixed; pointer-events: none; z-index: 999; font-size: 24px; transition: all 0.1s;
-  filter: drop-shadow(0 0 10px var(--accent));
+.modal-content {
+  background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(20,20,50,0.9)); padding: 50px;
+  border-radius: 25px; border: 2px solid var(--accent); box-shadow: var(--neon-glow); width: 90%; max-width: 450px;
+  text-align: center; animation: modalSlide 0.5s ease-out;
 }
-.chaos-mode * { animation: chaos 0.08s infinite alternate; }
-@keyframes chaos {
-  0% { filter: hue-rotate(0deg) brightness(1) contrast(1); }
-  100% { filter: hue-rotate(180deg) brightness(1.3) contrast(1.2); }
+@keyframes modalSlide { from { opacity: 0; transform: scale(0.8) translateY(-50px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-avatar { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 20px; box-shadow: var(--neon-glow); }
+.login-input {
+  width: 100%; padding: 20px; margin: 15px 0; border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 15px; background: rgba(255,255,255,0.05); color: var(--text); font-size: 18px;
+  transition: all 0.3s; backdrop-filter: blur(10px);
 }
-@media (max-width: 768px) {
-  .nav-section { flex-wrap: wrap; } .nav-btn { padding: 10px 16px; font-size: 12px; }
-  .btn-big { font-size: 18px; padding: 15px 25px; min-width: 160px; }
-}
+.login-input:focus { outline: none; border-color: var(--accent); box-shadow: var(--neon-glow); }
+.login-suggest { font-size: 14px; color: var(--online); cursor: pointer; margin: 10px 0; }
+#cursor-trail { position: fixed; pointer-events: none; z-index: 999; font-size: 24px; filter: drop-shadow(0 0 10px var(--accent)); }
+@keyframes podiumGlow { 0% { box-shadow: var(--neon-glow); } 100% { box-shadow: 0 0 30px var(--accent), 0 0 60px var(--accent); } }
+@media (max-width: 768px) { .podium { flex-direction: column; gap: 20px; } .nav-section { flex-direction: column; gap: 5px; } }
 </style>
 </head>
 <body>
+<!-- LOGIN MODAL -->
+<div id="login-modal">
+  <div class="modal-content">
+    <div id="modal-avatar" class="modal-avatar" style="background: linear-gradient(45deg, #ff00ff, #00f0ff);"></div>
+    <h2 style="margin-bottom: 20px; text-shadow: 0 0 20px var(--accent);">👑 Enter Ramesh Hub</h2>
+    <input class="login-input" id="username" placeholder="Your Epic Name..." maxlength="12">
+    <div class="login-suggest" onclick="suggestName('Arjun')">Arjun</div>
+    <div class="login-suggest" onclick="suggestName('Priya')">Priya</div>
+    <div class="login-suggest" onclick="suggestName('Vikram')">Vikram</div>
+    <button class="btn-big" onclick="login()" style="margin-top: 30px;">🚀 ENTER HUB</button>
+  </div>
+</div>
+
 <div id="topbar">
   <div class="nav-section">
     <button class="nav-btn" onclick="showSection('hub')">🏠 Hub</button>
     <button class="nav-btn" onclick="showSection('games')">🎮 Games</button>
-    <button class="nav-btn" onclick="showSection('quests')">📜 Quests</button>
+    <button class="nav-btn" onclick="showSection('ai')">🤖 AI</button>
     <button class="nav-btn" onclick="showSection('leaderboard')">🏆 Leaderboard</button>
-    <button class="nav-btn" onclick="showSection('settings')">⚙️ Customize</button>
   </div>
   <div id="profile">
-    <input id="username" placeholder="Enter name" maxlength="12" style="padding:8px;border-radius:15px;border:none;">
-    <button class="login-btn" onclick="login()">Login</button>
-    <span id="user-coins">Ramesh Coins: 0 🪙</span>
+    <div id="profile-pic" class="profile-pic"></div>
+    <span id="profile-name" style="font-weight: bold;"></span>
+    <span id="user-coins">0 🪙</span>
     <span id="online-count">🟢 12 online</span>
   </div>
 </div>
 
 <section id="hub" class="active">
-  <h1 style="text-align:center;font-size:3.5em;margin-bottom:30px;text-shadow:0 0 30px var(--accent);">Ramesh Fun Hub 🎉</h1>
-  <div class="game-card">
-    <h3>Quick Play</h3>
-    <button class="btn-big" onclick="startTapFrenzy()">🖱️ Tap Frenzy</button>
-    <button class="btn-big" onclick="startQuiz()">🧠 Quick Quiz</button>
-    <button class="btn-big" onclick="toggleChaos()">💥 Chaos Mode</button>
+  <h1 style="text-align:center;font-size:4em;margin-bottom:40px;text-shadow:0 0 40px var(--accent);">Ramesh Fun Hub 🔥</h1>
+  <div class="hub-grid">
+    <div class="hub-card">
+      <h3>🤖 AI Party Bot</h3>
+      <p>Chat with Ramesh AI for jokes & chaos tips!</p>
+      <button class="btn-big" onclick="showSection('ai')">Chat Now</button>
+    </div>
+    <div class="hub-card">
+      <h3>💥 Chaos Mode</h3>
+      <p>Screen shake + color storm = pure madness!</p>
+      <button class="btn-big" onclick="toggleChaos()">ACTIVATE 💥</button>
+    </div>
+    <div class="hub-card">
+      <h3>📊 Live Stats</h3>
+      <p>Watch rivals panic as you climb! 👀</p>
+      <button class="btn-big" onclick="showSection('leaderboard')">View Leaderboard</button>
+    </div>
   </div>
 </section>
 
 <section id="games">
-  <h2 style="text-align:center;margin-bottom:30px;">Games (Earn Coins!)</h2>
-  <div class="game-card">
-    <button class="btn-big" onclick="playGame('memory')">🧠 Memory Match</button>
-    <button class="btn-big" onclick="playGame('racer')">🏎️ Ramesh Racer</button>
-    <button class="btn-big" onclick="playGame('dice')">🎲 Dice Battle</button>
-  </div>
-  <canvas id="canvas" width="500" height="350" style="display:none;"></canvas>
-  <div id="game-ui"></div>
-</section>
-
-<section id="quests">
-  <div class="quests">
-    <h3>Daily Quests (+Bonus Coins!)</h3>
-    <div id="quest-list"></div>
+  <h2 style="text-align:center;margin-bottom:40px;font-size:2.5em;">🎮 GAME ARCADE</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:30px;">
+    <div class="game-card">
+      <h3>🚗 Auto Rickshaw</h3>
+      <button class="btn-big" onclick="playRickshaw()">🏎️ RACE NOW</button>
+    </div>
+    <div class="game-card">
+      <h3>🖱️ Tap Frenzy</h3>
+      <button class="btn-big" onclick="startTapFrenzy()">TAP MADNESS</button>
+    </div>
   </div>
 </section>
 
 <section id="leaderboard">
-  <div class="leaderboard">
-    <h3>🌟 Global Leaderboard</h3>
-    <div id="leaderboard-list"></div>
-    <p style="text-align:center;margin-top:20px;color:var(--online);">📈 Rivals improve every 30s!</p>
-  </div>
-</section>
-
-<section id="settings">
-  <div class="game-card">
-    <h3>Customize Your Hub</h3>
-    <button class="btn-big" onclick="setTheme('neon')">✨ Neon</button>
-    <button class="btn-big" onclick="setTheme('candy')">🍭 Candy</button>
-    <button class="btn-big" onclick="setTheme('dark')">🌙 Dark</button>
-    <button class="btn-big" onclick="setTheme('matrix')">💚 Matrix</button>
-    <br><input id="cursor-emoji" maxlength="2" placeholder="✨ Cursor Emoji" style="padding:12px;font-size:24px;margin:10px;border-radius:15px;border:2px solid var(--accent);background:var(--card);color:var(--text);">
-    <button class="btn-big" onclick="setCursorEmoji()">Set Cursor</button>
-    <button class="btn-big" onclick="resetProgress()">🔄 New Player</button>
+  <div class="leaderboard-container">
+    <h1 style="text-align:center;font-size:3em;margin-bottom:20px;text-shadow:0 0 30px var(--accent);">🏆 GLOBAL RANKINGS</h1>
+    <div class="podium">
+      <div id="gold" class="podium-card">
+        <div class="podium-rank">🥇</div>
+        <div id="p1-name" style="font-size:1.5em;font-weight:bold;">Loading...</div>
+        <div id="p1-score" style="font-size:2em;margin-top:10px;">0 🪙</div>
+      </div>
+      <div id="silver" class="podium-card">
+        <div class="podium-rank">🥈</div>
+        <div id="p2-name">Loading...</div>
+        <div id="p2-score" style="font-size:1.8em;margin-top:10px;">0 🪙</div>
+      </div>
+      <div id="bronze" class="podium-card">
+        <div class="podium-rank">🥉</div>
+        <div id="p3-name">Loading...</div>
+        <div id="p3-score" style="font-size:1.6em;margin-top:10px;">0 🪙</div>
+      </div>
+    </div>
+    <div class="player-list" id="player-list"></div>
   </div>
 </section>
 
@@ -149,260 +185,156 @@ section.active { display: block; }
 
 <script>
 let currentUser = localStorage.getItem('currentUser') || '';
-let rameshCoins = parseInt(localStorage.getItem(`${currentUser}_coins`) || '50');
-let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || 
-  JSON.stringify([
-    {name:'Arjun',score:285},{name:'Priya',score:267},{name:'Vikram',score:245},
-    {name:'Aisha',score:231},{name:'Ramesh',score:198},{name:'Lakshmi',score:187},
-    {name:'Raj',score:176},{name:'Meera',score:165},{name:'Kiran',score:154},
-    {name:'Sanjay',score:142},{name:'Neha',score:131},{name:'Amit',score:120}
-  ]));
-let quests = JSON.parse(localStorage.getItem('quests') || JSON.stringify({
-  play3games: {progress:0, target:3, reward:50, completed:false},
-  win50coins: {progress:0, target:50, reward:75, completed:false},
-  useChaos: {progress:0, target:1, reward:25, completed:false},
-  customize: {progress:0, target:1, reward:40, completed:false},
-  tap10: {progress:0, target:10, reward:30, completed:false}
-}));
+let rameshCoins = parseInt(localStorage.getItem(`${currentUser}_coins`) || '100');
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || JSON.stringify([
+  {name:'Arjun',score:285},{name:'Priya',score:267},{name:'Vikram',score:245},
+  {name:'Aisha',score:231},{name:'Ramesh',score:198},{name:'Lakshmi',score:187},
+  {name:'Raj',score:176},{name:'Meera',score:165},{name:'Kiran',score:154}
+]));
 let onlineCount = 12;
-let gameStats = {gamesPlayed:0, coinsWon:0};
-const indianNames = ['Arjun','Priya','Vikram','Aisha','Ramesh','Lakshmi','Raj','Meera','Kiran','Sanjay','Neha','Amit','Deepak','Ritu'];
+const indianNames = ['Arjun','Priya','Vikram','Aisha','Ramesh','Lakshmi','Raj','Meera','Kiran','Sanjay','Neha','Amit'];
 
-if(currentUser) {
-  document.getElementById('username').value = currentUser;
-  rameshCoins = parseInt(localStorage.getItem(`${currentUser}_coins`) || '50');
+// Init - Show login if no user
+if(!currentUser) document.getElementById('login-modal').style.display = 'flex';
+
+function suggestName(name) {
+  document.getElementById('username').value = name;
+  generateAvatar(name);
 }
-updateUI();
+
+function generateAvatar(name) {
+  const colors = ['#ff6bff','#00ff88','#ffaa00','#ff4444','#44ff44'];
+  const hue = colors[Math.floor(name.length / 2) % colors.length];
+  document.getElementById('modal-avatar').style.background = `linear-gradient(45deg, ${hue}, ${lightenColor(hue)})`;
+}
+
+function lightenColor(hex) {
+  const r = parseInt(hex.slice(1,3),16); const g = parseInt(hex.slice(3,5),16); const b = parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.min(255,r+50)},${Math.min(255,g+50)},${Math.min(255,b+50)})`;
+}
 
 function login() {
-  const name = document.getElementById('username').value.trim() || 'Ramesh';
-  if(name === currentUser) return;
-  currentUser = name;
+  currentUser = document.getElementById('username').value.trim() || 'Ramesh';
+  if(currentUser.length < 2) return alert('Name too short! 😅');
   localStorage.setItem('currentUser', currentUser);
-  rameshCoins = parseInt(localStorage.getItem(`${currentUser}_coins`) || '50');
-  quests.customize.progress = 1; checkQuest('customize');
-  updateUI();
-  confettiBurst(); alert(`Welcome back, ${currentUser}! 🎉`);
+  rameshCoins = parseInt(localStorage.getItem(`${currentUser}_coins`) || '100');
+  generateAvatar(currentUser);
+  document.getElementById('login-modal').style.display = 'none';
+  updateProfile();
+  updateLeaderboard();
+  confettiBurst();
 }
 
-function updateUI() {
-  document.getElementById('user-coins').textContent = `Ramesh Coins: ${rameshCoins} 🪙`;
-  if(currentUser) document.getElementById('profile').insertAdjacentHTML('afterbegin', `<span style="font-weight:bold;color:var(--online);">${currentUser}</span>`);
+function updateProfile() {
+  document.getElementById('profile-name').textContent = currentUser;
+  document.getElementById('user-coins').textContent = `${rameshCoins} 🪙`;
+  document.getElementById('profile-pic').style.background = document.getElementById('modal-avatar').style.background;
 }
 
 function showSection(id) {
   document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if(id === 'quests') renderQuests();
-  if(id === 'leaderboard') renderLeaderboard();
-}
-
-function addCoins(amount, reason = '') {
-  rameshCoins += amount;
-  gameStats.coinsWon += amount;
-  localStorage.setItem(`${currentUser}_coins`, rameshCoins);
-  updateUI();
-  checkQuest('win50coins');
-  if(amount > 0) confettiBurst();
-  updateLeaderboard();
-  if(reason) alert(`${reason}! +${amount} Ramesh Coins 🪙`);
+  if(id === 'leaderboard') updateLeaderboard();
 }
 
 function updateLeaderboard() {
-  if(!currentUser) return;
+  // Update current user
   let userEntry = leaderboard.find(p => p.name === currentUser);
-  if(!userEntry) {
-    leaderboard.push({name: currentUser, score: rameshCoins});
-  } else {
-    userEntry.score = rameshCoins;
-  }
-  leaderboard.sort((a,b) => b.score - a.score).slice(0,12);
+  if(!userEntry) { leaderboard.push({name: currentUser, score: rameshCoins}); }
+  else { userEntry.score = rameshCoins; }
+  
+  leaderboard.sort((a,b) => b.score - a.score);
   localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-}
-
-function renderLeaderboard() {
-  document.getElementById('leaderboard-list').innerHTML = leaderboard.map((p, i) => 
-    `<div class="leader-row">
-      <span>#${i+1} ${p.name}</span>
-      <span style="font-weight:bold;color:var(--online);">${p.score} 🪙</span>
-    </div>`).join('');
-}
-
-function renderQuests() {
-  document.getElementById('quest-list').innerHTML = Object.entries(quests).map(([id, q]) => {
-    const progress = Math.min(q.progress/q.target * 100, 100);
-    const barWidth = progress + '%';
-    return `<div class="quest-row">
+  
+  // Podium
+  if(leaderboard[0]) {
+    document.getElementById('p1-name').textContent = leaderboard[0].name;
+    document.getElementById('p1-score').textContent = leaderboard[0].score + ' 🪙';
+  }
+  if(leaderboard[1]) {
+    document.getElementById('p2-name').textContent = leaderboard[1].name;
+    document.getElementById('p2-score').textContent = leaderboard[1].score + ' 🪙';
+  }
+  if(leaderboard[2]) {
+    document.getElementById('p3-name').textContent = leaderboard[2].name;
+    document.getElementById('p3-score').textContent = leaderboard[2].score + ' 🪙';
+  }
+  
+  // Player list
+  const list = document.getElementById('player-list');
+  list.innerHTML = leaderboard.slice(3,13).map((player, i) => {
+    const rank = i + 4;
+    const isYou = player.name === currentUser;
+    return `<div class="player-card ${isYou ? 'you' : ''}">
       <div>
-        <strong>${getQuestName(id)} (${q.progress}/${q.target})</strong>
-        <div class="quest-progress" style="width:${barWidth};background:linear-gradient(90deg,${q.completed ? '#00ff88' : '#ffaa00'},#00ff88);"></div>
+        <span style="font-size:1.2em;font-weight:bold;">#${rank}</span>
+        <span style="margin-left:10px;">${player.name}</span>
       </div>
-      ${q.completed ? '<span style="color:#00ff88;">✓ +'+q.reward+'!</span>' : ''}
+      <div style="font-weight:bold;color:var(--online);">${player.score} 🪙</div>
     </div>`;
   }).join('');
 }
 
-const questNames = {
-  play3games: 'Play 3 Games',
-  win50coins: 'Win 50 Coins', 
-  useChaos: 'Toggle Chaos Mode',
-  customize: 'Change Theme/Cursor',
-  tap10: 'Get 10+ Taps'
-};
-function getQuestName(id) { return questNames[id] || id; }
+function addCoins(amount) {
+  rameshCoins += amount;
+  localStorage.setItem(`${currentUser}_coins`, rameshCoins);
+  updateProfile();
+  updateLeaderboard();
+  confettiBurst();
+}
 
-function checkQuest(id) {
-  if(!quests[id] || quests[id].completed) return;
-  quests[id].progress++;
-  if(quests[id].progress >= quests[id].target) {
-    quests[id].completed = true;
-    addCoins(quests[id].reward, `Quest Complete: ${getQuestName(id)}`);
+function confettiBurst() {
+  // Simplified confetti
+  for(let i = 0; i < 30; i++) {
+    let c = document.createElement('div');
+    c.style.cssText = `position:fixed;top:0;left:${Math.random()*100}vw;width:10px;height:10px;background:hsl(${Math.random()*360},100%,50%);z-index:1001;animation:fall 2s linear forwards;pointer-events:none;border-radius:50%;`;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2000);
   }
-  localStorage.setItem('quests', JSON.stringify(quests));
-  if(document.querySelector('#quests').classList.contains('active')) renderQuests();
-}
-
-function playGame(type) {
-  gameStats.gamesPlayed++;
-  checkQuest('play3games');
-  showSection('games');
-  document.getElementById('game-ui').innerHTML = `<h3>${type.toUpperCase()} - Win +10 Coins!</h3>
-    <button class="btn-big" onclick="endGame(${type}, true)">Win! 🏆</button>
-    <button class="btn-big" onclick="endGame(${type}, false)">Lose 😅</button>`;
-}
-
-function endGame(type, won) {
-  const points = won ? 12 : -4;
-  addCoins(points, `${type} ${won ? 'Win' : 'Loss'}`);
-  document.getElementById('game-ui').innerHTML = `<h3>Game Over! ${won ? '+12' : '-4'} Coins</h3>`;
-}
-
-function startTapFrenzy() {
-  gameStats.gamesPlayed++; checkQuest('play3games');
-  let taps = 0, time = 12;
-  showSection('games');
-  const btn = document.createElement('button');
-  btn.className = 'btn-big'; btn.style.fontSize = '48px';
-  btn.innerHTML = 'TAP FAST! 🖱️🔥'; btn.id = 'tap-btn';
-  document.getElementById('game-ui').innerHTML = '';
-  document.getElementById('game-ui').appendChild(btn);
-  document.getElementById('game-ui').innerHTML += `<div>Taps: 0 | ${time}s</div>`;
-  
-  btn.onclick = () => {
-    taps++; checkQuest('tap10');
-    document.querySelector('#game-ui div').textContent = `Taps: ${taps} | ${time}s`;
-    if(taps >= 10) checkQuest('tap10');
-  };
-  
-  let timer = setInterval(() => {
-    time--;
-    document.querySelector('#game-ui div').textContent = `Taps: ${taps} | ${time}s`;
-    if(time <= 0) {
-      clearInterval(timer);
-      addCoins(Math.floor(taps * 1.5), 'Tap Frenzy');
-    }
-  }, 1000);
-}
-
-function startQuiz() {
-  gameStats.gamesPlayed++; checkQuest('play3games');
-  const questions = [
-    {q: '🇮🇳 Capital of India?', a: 'new delhi'},
-    {q: '🏏 National sport?', a: 'hockey'}
-  ];
-  let idx = 0;
-  showSection('games');
-  document.getElementById('game-ui').innerHTML = `
-    <div>${questions[0].q}</div>
-    <input id="quiz-ans" style="padding:15px;font-size:20px;margin:10px;border-radius:15px;border:2px solid var(--accent);background:var(--card);color:var(--text);" placeholder="Answer">
-    <button class="btn-big" onclick="checkQuizAns()">Submit</button>
-  `;
-  window.checkQuizAns = () => {
-    if(idx >= questions.length-1) {
-      addCoins(15, 'Quiz Master');
-      return;
-    }
-    if(document.getElementById('quiz-ans').value.toLowerCase().includes(questions[idx].a)) {
-      addCoins(8);
-    }
-    idx++;
-    document.querySelector('#game-ui div').textContent = questions[idx].q;
-    document.getElementById('quiz-ans').value = '';
-  };
-}
-
-function setTheme(theme) {
-  const themes = {
-    neon: 'linear-gradient(135deg,#ff00ff,#00f0ff,#ffea00)', candy: 'linear-gradient(135deg,#ff69b4,#00ff7f,#ffff00)',
-    dark: 'linear-gradient(135deg,#0a0a0a,#1a1a2e,#16213e)', matrix: 'linear-gradient(135deg,#00ff41,#008000)'
-  };
-  const accents = {neon:'#ff6bff', candy:'#ff1493', dark:'#00ff88', matrix:'#00ff41'};
-  document.documentElement.style.setProperty('--bg-gradient', themes[theme]);
-  document.documentElement.style.setProperty('--accent', accents[theme]);
-  checkQuest('customize');
-  localStorage.setItem('theme', theme);
-}
-
-function setCursorEmoji() {
-  const emoji = document.getElementById('cursor-emoji').value || '✨';
-  localStorage.setItem('cursorEmoji', emoji);
-  checkQuest('customize');
 }
 
 function toggleChaos() {
   document.body.classList.toggle('chaos-mode');
-  checkQuest('useChaos');
-}
-
-function confettiBurst() {
-  for(let i = 0; i < 60; i++) {
-    let conf = document.createElement('div');
-    conf.style.cssText = `position:fixed;top:0;left:${Math.random()*100}vw;width:12px;height:12px;
-      background:hsl(${Math.random()*360},100%,50%);pointer-events:none;z-index:1001;
-      border-radius:50%;animation:fall 3s linear forwards;`;
-    conf.animate([
-      {transform: 'translateY(-100vh) rotate(0deg)', opacity: 1},
-      {transform: 'translateY(100vh) rotate(720deg)', opacity: 0}
-    ], {duration: 3000});
-    document.body.appendChild(conf);
-    setTimeout(() => conf.remove(), 3000);
-  }
-}
-
-function resetProgress() {
-  if(confirm('Reset all progress?')) {
-    localStorage.clear();
-    location.reload();
-  }
 }
 
 // Mouse trail
-let trail = document.getElementById('cursor-trail');
 document.addEventListener('mousemove', e => {
-  trail.textContent = localStorage.getItem('cursorEmoji') || '✨';
+  const trail = document.getElementById('cursor-trail');
+  trail.textContent = '✨';
   trail.style.left = (e.pageX - 12) + 'px';
   trail.style.top = (e.pageY - 12) + 'px';
 });
 
-// Fake online users + rival improvement
+// Fake online counter
 setInterval(() => {
   onlineCount = 8 + Math.floor(Math.random() * 18);
   document.getElementById('online-count').textContent = `🟢 ${onlineCount} online`;
-  
-  // Rivals improve slowly
-  leaderboard.slice(0,8).forEach((player, i) => {
-    if(player.name !== currentUser && Math.random() < 0.15) {
-      player.score += 1 + Math.floor(Math.random() * 4);
+}, 8000);
+
+// Rival improvement
+setInterval(() => {
+  leaderboard.slice(0,5).forEach(player => {
+    if(player.name !== currentUser && Math.random() < 0.2) {
+      player.score += Math.floor(Math.random() * 5) + 1;
     }
   });
   localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
 }, 30000);
 
-// Init
-setTheme(localStorage.getItem('theme') || 'neon');
-setCursorEmoji();
-if(currentUser) renderLeaderboard(); renderQuests();
-setInterval(renderQuests, 5000); // Auto-refresh quests
+// ESC closes modal
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && document.getElementById('login-modal').style.display === 'flex') {
+    document.getElementById('login-modal').style.display = 'none';
+  }
+});
+
+// Auto-login demo
+setTimeout(() => {
+  if(!currentUser && !document.getElementById('username').value) {
+    document.getElementById('username').value = 'Ramesh';
+    generateAvatar('Ramesh');
+  }
+}, 2000);
 </script>
 </body>
 </html>
