@@ -33,10 +33,8 @@ input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:
 <!-- LOGIN -->
 <div id="login" class="section active">
   <div class="card">
-    <h2>Login</h2>
-    <input id="email" type="email" placeholder="Email"><br>
-    <input id="pass" type="password" placeholder="Password"><br>
-    <button onclick="loginUser()">Login</button>
+    <h2>Login with Google</h2>
+    <button onclick="googleLogin()">Sign in with Google</button>
     <p id="loginMsg"></p>
   </div>
 </div>
@@ -152,68 +150,67 @@ const db = firebase.database();
 
 let user=null, coins=0, xp=0, level=1;
 
+// SECTIONS
 function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// LOGIN AUTOMATIC WITH AUTO-REGISTER
-function loginUser(){
-  const email=document.getElementById('email').value;
-  const pass=document.getElementById('pass').value;
-  auth.signInWithEmailAndPassword(email,pass)
-  .then(res=>{user=res.user; initUser();})
-  .catch(err=>{
-    if(err.code==='auth/user-not-found'){
-      // Create user automatically
-      auth.createUserWithEmailAndPassword(email,pass)
-      .then(res=>{user=res.user; initUser();})
-      .catch(err2=>document.getElementById('loginMsg').innerText=err2.message);
-    } else {
-      document.getElementById('loginMsg').innerText=err.message;
-    }
-  });
+// GOOGLE LOGIN
+const provider = new firebase.auth.GoogleAuthProvider();
+function googleLogin() {
+  auth.signInWithPopup(provider)
+  .then(result=>{
+    user = result.user;
+    initUser();
+  })
+  .catch(err=>document.getElementById('loginMsg').innerText=err.message);
 }
 
-// INIT USER DATA
+// INIT USER
 function initUser(){
-  const uid=user.uid;
-  const isAdmin=user.email==='rameshenterprises@protonmail.com';
-  db.ref('users/'+uid).once('value').then(snap=>{
-    const data=snap.val();
-    coins=data?.coins||0; xp=data?.xp||0; level=data?.level||1;
+  const uid = user.uid;
+  const isAdmin = (user.email==='rameshenterprises@protonmail.com');
+  db.ref('users/' + uid).once('value').then(snap=>{
+    const data = snap.val();
+    coins = data?.coins || 0;
+    xp = data?.xp || 0;
+    level = data?.level || 1;
     updateStats();
     trackOnline();
     updateLeaderboard();
     showSection('hub');
     if(isAdmin) document.getElementById('adminBtn').style.display='block';
-  });
+  }).catch(err=>console.log(err));
 }
 
-// SAVE
+// SAVE & STATS
 function save(){db.ref('users/'+user.uid).set({coins,xp,level}); updateStats(); updateLeaderboard();}
 function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} save();}
 function addCoins(a){coins+=a; save();}
-
 function updateStats(){
   document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Level ${level}`;
   document.getElementById('xpBar').style.width=Math.floor(xp/(level*100)*100)+'%';
   document.getElementById('xpText').innerText=`XP: ${xp} / ${level*100}`;
 }
 
-// ONLINE
+// ONLINE USERS
 function trackOnline(){
   const uid=user.uid;
   const onlineRef=db.ref('online/'+uid);
   const conRef=db.ref('.info/connected');
-  conRef.on('value',snap=>{if(snap.val()){onlineRef.set(true); onlineRef.onDisconnect().remove();}});
-  db.ref('online').on('value',snap=>{document.getElementById('onlineUsers').innerText=snap.numChildren()+' players online';});
+  conRef.on('value',snap=>{
+    if(snap.val()){onlineRef.set(true); onlineRef.onDisconnect().remove();}
+  });
+  db.ref('online').on('value',snap=>{
+    document.getElementById('onlineUsers').innerText=snap.numChildren()+' players online';
+  });
 }
 
 // LEADERBOARD
 function updateLeaderboard(){
   db.ref('users').orderByChild('coins').limitToLast(5).once('value',snap=>{
-    const data=snap.val(); let html='';
+    const data = snap.val(); let html='';
     for(let uid in data){const u=data[uid]; html+=`<div>${u.coins} 🪙 | Lv.${u.level}</div>`;}
     document.getElementById('hubLeaderboard').innerHTML=html;
   });
@@ -229,7 +226,7 @@ function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor
 function clickSpeedTest(){alert("Click OK fast 5 times!"); let start=Date.now(); for(let i=0;i<5;i++){prompt("Click!");} let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s, XP: "+(50-t)+", Coins: "+(50-t)); addXP(50-t); addCoins(50-t);}
 function typingTest(){let text="Ramesh Fun Hub is awesome!"; let start=Date.now(); let input=prompt("Type:\n"+text); let t=Math.floor((Date.now()-start)/1000); if(input===text){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect typing.");}
 function memorySequence(){let seq=""; for(let i=0;i<5;i++){seq+=Math.floor(Math.random()*9);} let ans=prompt("Remember sequence: "+seq); if(ans===seq){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
-function hangman(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let guess=""; let tries=6; while(tries>0 && guess!==w){let c=prompt("Guess a letter / word: "+guess); if(c===w){guess=w; break;} else{tries--;}} if(guess===w){alert("You win! +50 Coins +50 XP"); addCoins(50); addXP(50);} else alert("You lose!");}
+function hangman(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let guess=""; let tries=6; while(tries>0 && guess!==w){let c=prompt("Guess a letter / word: "+guess); if(c===w){guess=w; break;} else{tries--;}} if(guess===w){alert("You win! +50 Coins +50 XP"); addCoins(50); addXP(50);} else alert("You lose!";}
 function wordScramble(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let scrambled=w.split("").sort(()=>0.5-Math.random()).join(""); let ans=prompt("Unscramble: "+scrambled); if(ans===w){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
 function triviaQuiz(){let q=[{q:"Ramesh's favorite color?",a:"Yellow"},{q:"Fun hub created in?",a:"2025"}]; let correct=0; for(let i=0;i<q.length;i++){let ans=prompt(q[i].q); if(ans===q[i].a){correct++; addCoins(20); addXP(20);}} alert("You got "+correct+"/"+q.length);}
 function idleClicker(){let points=0; for(let i=0;i<10;i++){points+=5;} alert("You earned "+points+" Coins + XP"); addCoins(points); addXP(points);}
