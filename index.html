@@ -5,69 +5,64 @@
 <title>Ramesh Fun Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
 :root{
   --accent:#ff9800;
-  --bg:#0f0f0f;
-  --card:#1c1c1c;
-  --text:#ffffff;
+  --bg:#0b0b0f;
+  --card:#161622;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:Inter,Segoe UI,Arial;
-  background:linear-gradient(135deg,#0b0b0b,#1a1a1a);
-  color:var(--text);
+  background:linear-gradient(135deg,#0a0a0f,#151522);
+  color:#fff;
 }
 header{
   padding:16px;
-  background:#000c;
+  background:#000a;
   text-align:center;
   position:sticky;
   top:0;
+  z-index:10;
 }
-h1{margin:0}
-#topbar{
-  margin-top:6px;
-  font-size:14px;
-  opacity:.85;
-}
-.section{
-  display:none;
-  padding:20px;
-}
+.section{display:none;padding:20px}
 .card{
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 10px 25px #0008;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 20px 40px #0007;
 }
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:12px;
+  gap:14px;
 }
 button{
   background:var(--accent);
   border:none;
-  color:#000;
-  padding:12px;
-  border-radius:10px;
+  padding:14px;
+  border-radius:14px;
   font-size:15px;
   cursor:pointer;
 }
 button.secondary{
-  background:#333;
+  background:#2b2b40;
   color:#fff;
 }
 button:hover{opacity:.9}
 input{
   width:100%;
-  padding:12px;
-  border-radius:10px;
+  padding:14px;
+  border-radius:12px;
   border:none;
-  margin-bottom:10px;
+  margin-bottom:12px;
   font-size:15px;
 }
 .leader{
@@ -76,16 +71,6 @@ input{
   padding:8px 0;
   border-bottom:1px solid #333;
 }
-.chat{
-  background:#000;
-  height:160px;
-  overflow:auto;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:10px;
-  font-size:14px;
-}
-.small{font-size:13px;opacity:.8}
 .correct{color:#4caf50}
 .wrong{color:#f44336}
 </style>
@@ -95,17 +80,15 @@ input{
 
 <header>
 <h1>🔥 Ramesh Fun Hub</h1>
-<div id="topbar"></div>
+<div id="top"></div>
 </header>
 
 <!-- LOGIN -->
 <div id="login" class="section">
 <div class="card">
-<h2>Login / Register</h2>
+<h2>Login</h2>
 <input id="lu" placeholder="Username">
-<input id="lp" type="password" placeholder="Password">
 <button onclick="login()">Enter</button>
-<p class="small">First time? Account will be created automatically.</p>
 </div>
 </div>
 
@@ -114,9 +97,7 @@ input{
 <div class="grid">
 <button onclick="show('games')">🎮 Games</button>
 <button onclick="show('quiz')">🧠 Quiz</button>
-<button onclick="show('ai')">🤖 AI Chat</button>
 <button onclick="show('leaderboard')">🏆 Leaderboard</button>
-<button onclick="show('profile')">👤 Profile</button>
 <button id="adminBtn" onclick="show('admin')" style="display:none">👑 Admin</button>
 </div>
 </div>
@@ -125,10 +106,9 @@ input{
 <div id="games" class="section">
 <div class="card">
 <h2>🎮 Games</h2>
-<button onclick="clicker()">Clicker (+5)</button>
+<button onclick="addCoins(5)">Clicker (+5)</button>
 <button onclick="guess()">Guess Number</button>
-<button onclick="rps()">Rock Paper Scissors</button>
-<button onclick="reaction()">Reaction Test</button>
+<button onclick="reaction()">Reaction</button>
 <button class="secondary" onclick="show('home')">⬅ Back</button>
 </div>
 </div>
@@ -136,21 +116,10 @@ input{
 <!-- QUIZ -->
 <div id="quiz" class="section">
 <div class="card">
-<h2>🧠 Ramesh Life Quiz</h2>
-<p id="quizQ"></p>
-<div id="quizO"></div>
-<p id="quizR"></p>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
-</div>
-</div>
-
-<!-- AI -->
-<div id="ai" class="section">
-<div class="card">
-<h2>🤖 Ramesh AI</h2>
-<div class="chat" id="chat"></div>
-<input id="aiInput" placeholder="Say something...">
-<button onclick="sendAI()">Send</button>
+<h2>🧠 Ramesh Quiz</h2>
+<p id="q"></p>
+<div id="opts"></div>
+<p id="qr"></p>
 <button class="secondary" onclick="show('home')">⬅ Back</button>
 </div>
 </div>
@@ -158,18 +127,8 @@ input{
 <!-- LEADERBOARD -->
 <div id="leaderboard" class="section">
 <div class="card">
-<h2>🏆 Live Leaderboard</h2>
+<h2>🏆 Global Leaderboard</h2>
 <div id="board"></div>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
-</div>
-</div>
-
-<!-- PROFILE -->
-<div id="profile" class="section">
-<div class="card">
-<h2>👤 Profile</h2>
-<p id="profileInfo"></p>
-<button onclick="resetCoins()">Reset Coins</button>
 <button class="secondary" onclick="show('home')">⬅ Back</button>
 </div>
 </div>
@@ -178,150 +137,118 @@ input{
 <div id="admin" class="section">
 <div class="card">
 <h2>👑 Admin Panel</h2>
-<button onclick="coins+=500;save()">+500 Coins</button>
-<button onclick="resetLeaderboard()">Reset Leaderboard</button>
+<button onclick="addCoins(500)">+500 Coins</button>
+<button onclick="wipe()">Reset Leaderboard</button>
 <button class="secondary" onclick="show('home')">⬅ Back</button>
 </div>
 </div>
 
 <script>
-/* ---------- STATE ---------- */
-let user=localStorage.user||null;
-let coins=Number(localStorage.coins)||0;
+/* 🔥 FIREBASE INIT */
+firebase.initializeApp({
+  apiKey: "AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
+  authDomain: "ramesh-fun-hub.firebaseapp.com",
+  databaseURL: "https://ramesh-fun-hub-default-rtdb.firebaseio.com",
+  projectId: "ramesh-fun-hub"
+});
+const db = firebase.database();
 
-/* ---------- NAV ---------- */
+/* STATE */
+let user = localStorage.user || null;
+let coins = Number(localStorage.coins) || 0;
+
+/* NAV */
 function show(id){
 document.querySelectorAll('.section').forEach(s=>s.style.display='none');
 document.getElementById(id).style.display='block';
 }
 
-/* ---------- LOGIN ---------- */
+/* LOGIN */
 function login(){
 let u=lu.value.trim();
-let p=lp.value.trim();
-if(!u||!p)return alert("Fill both fields");
-if(!localStorage["acc_"+u]) localStorage["acc_"+u]=p;
-if(localStorage["acc_"+u]!==p) return alert("Wrong password");
+if(!u)return;
 localStorage.user=u;
 user=u;
-start();
-}
-
-/* ---------- START ---------- */
-function start(){
-topbar.innerText=`👤 ${user} | 🪙 ${coins}`;
 if(user==="admin") adminBtn.style.display="block";
+sync();
 show('home');
 }
 
-/* ---------- SAVE ---------- */
-function save(){
-localStorage.coins=coins;
-topbar.innerText=`👤 ${user} | 🪙 ${coins}`;
+/* COINS */
+function addCoins(n){
+coins+=n;
+save();
 }
 
-/* ---------- GAMES ---------- */
-function clicker(){coins+=5;save();}
+/* SAVE + SYNC */
+function save(){
+localStorage.coins=coins;
+document.getElementById("top").innerText=`👤 ${user} | 🪙 ${coins}`;
+db.ref("scores/"+user).set(coins);
+}
+
+/* GAMES */
 function guess(){
 let n=Math.ceil(Math.random()*5);
-let g=prompt("Guess number 1–5");
-if(Number(g)===n) coins+=15;
-save();
-}
-function rps(){
-let c=["rock","paper","scissors"];
-let ai=c[Math.floor(Math.random()*3)];
-let u=prompt("rock / paper / scissors");
-if(u===ai) coins+=10;
-save();
+let g=prompt("Guess 1-5");
+if(Number(g)===n) addCoins(20);
 }
 function reaction(){
 let t=Date.now();
 alert("Click OK fast");
 alert("Time: "+(Date.now()-t)+"ms");
-coins+=10;save();
+addCoins(10);
 }
 
-/* ---------- QUIZ ---------- */
-let quiz=[
-{q:"Ramesh never wakes up without?",o:["Alarm","Phone","Tea","Motivation"],a:1},
-{q:"Ramesh favourite line?",o:["Yes sir","Kal dekhenge","I agree","No"],a:1},
-{q:"Ramesh loves spending money on?",o:["Food","Games","Gym","Books"],a:1}
+/* QUIZ */
+const quiz=[
+{q:"Ramesh never starts day without?",o:["Phone","Tea","Gym"],a:0},
+{q:"Ramesh favourite line?",o:["Kal dekhenge","Yes sir","No"],a:0}
 ];
 let qi=0;
-
 function loadQuiz(){
-quizQ.innerText=quiz[qi].q;
-quizO.innerHTML="";
+q.innerText=quiz[qi].q;
+opts.innerHTML="";
 quiz[qi].o.forEach((o,i)=>{
 let b=document.createElement("button");
 b.innerText=o;
-b.onclick=()=>answerQuiz(i);
-quizO.appendChild(b);
-});
-quizR.innerText="";
-}
-function answerQuiz(i){
-if(i===quiz[qi].a){
-quizR.innerHTML="<span class='correct'>Correct +20 🪙</span>";
-coins+=20;
-}else{
-quizR.innerHTML="<span class='wrong'>Wrong 😄</span>";
-}
+b.onclick=()=>{ 
+if(i===quiz[qi].a){qr.innerHTML="<span class='correct'>Correct +30</span>";addCoins(30);}
+else qr.innerHTML="<span class='wrong'>Wrong</span>";
 qi=(qi+1)%quiz.length;
-save();
-}
-
-/* ---------- AI ---------- */
-function sendAI(){
-let msg=aiInput.value;
-if(!msg)return;
-chat.innerHTML+=`<div><b>You:</b> ${msg}</div>`;
-let replies=[
-"Ramesh says: chill bro 😄",
-"Ramesh AI: play some games",
-"Ramesh AI: coins don’t earn themselves",
-"Ramesh AI: leaderboard waiting 👀"
-];
-let r=replies[Math.floor(Math.random()*replies.length)];
-chat.innerHTML+=`<div><b>AI:</b> ${r}</div>`;
-chat.scrollTop=9999;
-aiInput.value="";
-coins+=2;save();
-}
-
-/* ---------- LEADERBOARD ---------- */
-let fakePlayers=[];
-function genPlayers(){
-fakePlayers=[];
-for(let i=0;i<8;i++){
-fakePlayers.push({
-name:"Player"+Math.floor(Math.random()*9999),
-score:Math.floor(Math.random()*5000)
+};
+opts.appendChild(b);
 });
 }
-}
-function updateBoard(){
-let b=[...fakePlayers,{name:user,score:coins}];
-b.sort((a,b)=>b.score-a.score);
-board.innerHTML="";
-b.slice(0,10).forEach(p=>{
-board.innerHTML+=`<div class="leader"><span>${p.name}</span><span>${p.score}</span></div>`;
-});
-}
-function resetLeaderboard(){genPlayers();}
-
-/* ---------- PROFILE ---------- */
-function resetCoins(){
-coins=0;save();
-profileInfo.innerText="Coins reset.";
-}
-
-/* ---------- INIT ---------- */
-genPlayers();
-setInterval(updateBoard,3000);
-if(user) start(); else show('login');
 loadQuiz();
+
+/* LEADERBOARD */
+db.ref("scores").on("value",snap=>{
+let data=snap.val()||{};
+let arr=Object.entries(data).map(([u,s])=>({u,s}));
+arr.sort((a,b)=>b.s-a.s);
+board.innerHTML="";
+arr.slice(0,10).forEach(p=>{
+board.innerHTML+=`<div class="leader"><span>${p.u}</span><span>${p.s}</span></div>`;
+});
+});
+
+/* ADMIN */
+function wipe(){
+db.ref("scores").remove();
+}
+
+/* INIT */
+if(user){
+if(user==="admin") adminBtn.style.display="block";
+sync();
+show('home');
+}else show('login');
+
+function sync(){
+document.getElementById("top").innerText=`👤 ${user} | 🪙 ${coins}`;
+db.ref("scores/"+user).set(coins);
+}
 </script>
 
 </body>
