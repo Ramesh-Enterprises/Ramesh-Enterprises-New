@@ -12,15 +12,19 @@
 
 <style>
 :root{
-  --bg:#0f1220; --card:#1b1f3a; --accent:#ffcc00; --text:#fff;
+  --bg-dark:#0f1220;
+  --text-dark:#fff;
+  --card-dark:#1b1f3a;
+  --accent:#ffcc00;
 }
 body{
   margin:0;font-family:"Trebuchet MS",sans-serif;
-  background:var(--bg);color:var(--text);
+  background:var(--bg-dark);
+  color:var(--text-dark);
 }
 .section{display:none;padding:15px;}
 .active{display:block;}
-.card{background:var(--card);padding:12px;margin:10px 0;border-radius:10px;}
+.card{background:var(--card-dark);padding:12px;margin:10px 0;border-radius:10px;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
 button{background:var(--accent);border:none;padding:10px 12px;margin:3px;border-radius:6px;font-weight:bold;cursor:pointer;}
 input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:14px;}
@@ -239,8 +243,17 @@ function generate(type){const arr=genData[type]; const val=arr[Math.floor(Math.r
 function aiRespond(){const input=document.getElementById('aiInput').value.toLowerCase(); const responses=["Hmm!","😂","I see!","Try harder!","Cool!"]; document.getElementById('aiOutput').innerText=responses[Math.floor(Math.random()*responses.length)];}
 
 // CUSTOMIZATION
-function toggleDark(){document.body.style.background=document.body.style.background===var(--bg)?'#fff':var(--bg);document.body.style.color=document.body.style.color===var(--text)?'#000':var(--text);}
-function toggleRetro(){document.body.style.fontFamily=document.body.style.fontFamily==="Courier New"?"Trebuchet MS":"Courier New";}
+let darkMode=true;
+function toggleDark(){
+  if(darkMode){
+    document.body.style.background='#fff'; document.body.style.color='#000';
+  } else {
+    document.body.style.background='#0f1220'; document.body.style.color='#fff';
+  }
+  darkMode=!darkMode;
+}
+let retro=false;
+function toggleRetro(){document.body.style.fontFamily=retro?"Trebuchet MS":"Courier New"; retro=!retro;}
 function changeAccent(c){document.documentElement.style.setProperty('--accent',c);}
 function changeFont(f){document.body.style.fontFamily=f;}
 function randomBackground(){document.body.style.background=`linear-gradient(to right, #${Math.floor(Math.random()*16777215).toString(16)}, #${Math.floor(Math.random()*16777215).toString(16)})`;}
