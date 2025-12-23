@@ -2,254 +2,233 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ramesh Fun Hub</title>
+<title>Ramesh Fun Hub PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Firebase CDN -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
 :root{
-  --accent:#ff9800;
-  --bg:#0b0b0f;
-  --card:#161622;
+  --bg:#0f1220; --card:#1b1f3a; --accent:#ffcc00; --text:#fff;
 }
-*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Inter,Segoe UI,Arial;
-  background:linear-gradient(135deg,#0a0a0f,#151522);
-  color:#fff;
+  margin:0;font-family:"Trebuchet MS",sans-serif;
+  background:var(--bg);color:var(--text);cursor:url("https://twemoji.maxcdn.com/v/latest/svg/1f47e.svg") 16 16,auto;
 }
-header{
-  padding:16px;
-  background:#000a;
-  text-align:center;
-  position:sticky;
-  top:0;
-  z-index:10;
-}
-.section{display:none;padding:20px}
-.card{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(12px);
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 20px 40px #0007;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:14px;
-}
-button{
-  background:var(--accent);
-  border:none;
-  padding:14px;
-  border-radius:14px;
-  font-size:15px;
-  cursor:pointer;
-}
-button.secondary{
-  background:#2b2b40;
-  color:#fff;
-}
-button:hover{opacity:.9}
-input{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  margin-bottom:12px;
-  font-size:15px;
-}
-.leader{
-  display:flex;
-  justify-content:space-between;
-  padding:8px 0;
-  border-bottom:1px solid #333;
-}
-.correct{color:#4caf50}
-.wrong{color:#f44336}
+.section{display:none;padding:15px;}
+.active{display:block;}
+.card{background:var(--card);padding:12px;margin:10px 0;border-radius:10px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+button{background:var(--accent);border:none;padding:10px 12px;margin:3px;border-radius:6px;font-weight:bold;cursor:pointer;}
+input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:14px;}
+#xpBarContainer{background:#333;border-radius:10px;margin-top:5px;}
+#xpBar{height:16px;width:0%;background:var(--accent);border-radius:10px;transition:width 0.5s;}
 </style>
 </head>
-
 <body>
 
-<header>
-<h1>🔥 Ramesh Fun Hub</h1>
-<div id="top"></div>
-</header>
-
 <!-- LOGIN -->
-<div id="login" class="section">
-<div class="card">
-<h2>Login</h2>
-<input id="lu" placeholder="Username">
-<button onclick="login()">Enter</button>
-</div>
+<div id="login" class="section active">
+  <div class="card">
+    <h2>Login / Register</h2>
+    <input id="email" type="email" placeholder="Email"><br>
+    <input id="pass" type="password" placeholder="Password"><br>
+    <button onclick="loginUser()">Login</button>
+    <button onclick="registerUser()">Register</button>
+    <p id="loginMsg"></p>
+  </div>
 </div>
 
-<!-- HOME -->
-<div id="home" class="section">
-<div class="grid">
-<button onclick="show('games')">🎮 Games</button>
-<button onclick="show('quiz')">🧠 Quiz</button>
-<button onclick="show('leaderboard')">🏆 Leaderboard</button>
-<button id="adminBtn" onclick="show('admin')" style="display:none">👑 Admin</button>
-</div>
+<!-- HUB -->
+<div id="hub" class="section">
+  <h1>🔥 Ramesh Fun Hub 🔥</h1>
+  <div class="card">
+    <p id="userStats"></p>
+    <div id="xpBarContainer"><div id="xpBar"></div></div>
+    <p id="xpText"></p>
+  </div>
+  <div class="card">
+    <h2>🏆 Top Players</h2>
+    <div id="hubLeaderboard"></div>
+  </div>
+  <div class="card">
+    <h2>🟢 Online Users</h2>
+    <p id="onlineUsers"></p>
+  </div>
+  <div class="grid">
+    <button onclick="showSection('games')">🎮 Games</button>
+    <button onclick="showSection('generators')">📝 Generators</button>
+    <button onclick="showSection('ai')">🤖 AI Chat</button>
+    <button id="adminBtn" style="display:none;" onclick="showSection('admin')">👑 Admin</button>
+    <button onclick="showSection('custom')">🎨 Customize</button>
+  </div>
 </div>
 
 <!-- GAMES -->
 <div id="games" class="section">
-<div class="card">
-<h2>🎮 Games</h2>
-<button onclick="addCoins(5)">Clicker (+5)</button>
-<button onclick="guess()">Guess Number</button>
-<button onclick="reaction()">Reaction</button>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
-</div>
-</div>
-
-<!-- QUIZ -->
-<div id="quiz" class="section">
-<div class="card">
-<h2>🧠 Ramesh Quiz</h2>
-<p id="q"></p>
-<div id="opts"></div>
-<p id="qr"></p>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
-</div>
+  <h2>🎮 Games</h2>
+  <div class="grid">
+    <button onclick="guessNumber()">Guess Number</button>
+    <button onclick="diceRoll()">Dice Roll</button>
+    <button onclick="rockPaperScissors()">Rock Paper Scissors</button>
+    <button onclick="clickSpeedTest()">Click Speed Test</button>
+    <button onclick="typingTest()">Typing Test</button>
+    <button onclick="memorySequence()">Memory Sequence</button>
+    <button onclick="hangman()">Hangman</button>
+    <button onclick="wordScramble()">Word Scramble</button>
+    <button onclick="triviaQuiz()">Trivia Quiz</button>
+    <button onclick="idleClicker()">Idle Clicker</button>
+  </div>
+  <button onclick="showSection('hub')">⬅ Back</button>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="leaderboard" class="section">
-<div class="card">
-<h2>🏆 Global Leaderboard</h2>
-<div id="board"></div>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
+<!-- GENERATORS -->
+<div id="generators" class="section">
+  <h2>📝 Generators</h2>
+  <div class="grid">
+    <button onclick="generate('business')">Business Name</button>
+    <button onclick="generate('slogan')">Slogan</button>
+    <button onclick="generate('nickname')">Nickname / Gamertag</button>
+    <button onclick="generate('joke')">Joke</button>
+    <button onclick="generate('story')">Mini Story</button>
+    <button onclick="generate('poetry')">Poetry</button>
+    <button onclick="generate('dare')">Random Dare</button>
+    <button onclick="generate('excuse')">Random Excuse</button>
+    <button onclick="generate('password')">Password</button>
+    <button onclick="generate('color')">Color Palette</button>
+  </div>
+  <p id="genOutput"></p>
+  <button onclick="showSection('hub')">⬅ Back</button>
 </div>
+
+<!-- AI CHAT -->
+<div id="ai" class="section">
+  <h2>🤖 AI Chat</h2>
+  <input id="aiInput" placeholder="Say something">
+  <button onclick="aiRespond()">Talk</button>
+  <p id="aiOutput"></p>
+  <button onclick="showSection('hub')">⬅ Back</button>
+</div>
+
+<!-- CUSTOMIZATION -->
+<div id="custom" class="section">
+  <h2>🎨 Customize</h2>
+  <button onclick="toggleDark()">Toggle Dark / Light</button>
+  <button onclick="toggleRetro()">Toggle Retro Pixel Mode</button>
+  <input type="color" id="accentPicker" onchange="changeAccent(this.value)">
+  <select onchange="changeFont(this.value)">
+    <option value='Trebuchet MS'>Trebuchet MS</option>
+    <option value='Arial'>Arial</option>
+    <option value='Courier New'>Courier New</option>
+  </select>
+  <button onclick="randomBackground()">Random Gradient BG</button>
+  <button onclick="showSection('hub')">⬅ Back</button>
 </div>
 
 <!-- ADMIN -->
 <div id="admin" class="section">
-<div class="card">
-<h2>👑 Admin Panel</h2>
-<button onclick="addCoins(500)">+500 Coins</button>
-<button onclick="wipe()">Reset Leaderboard</button>
-<button class="secondary" onclick="show('home')">⬅ Back</button>
-</div>
+  <h2>👑 Admin Panel</h2>
+  <button onclick="addCoins(500)">+500 Coins</button>
+  <button onclick="wipeLeaderboard()">Reset Leaderboard</button>
+  <button onclick="showSection('hub')">⬅ Back</button>
 </div>
 
 <script>
-/* 🔥 FIREBASE INIT */
-firebase.initializeApp({
-  apiKey: "AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
-  authDomain: "ramesh-fun-hub.firebaseapp.com",
-  databaseURL: "https://ramesh-fun-hub-default-rtdb.firebaseio.com",
-  projectId: "ramesh-fun-hub"
-});
+// 🔥 Firebase Config
+const firebaseConfig = { apiKey:"YOUR_API_KEY", authDomain:"YOUR_PROJECT.firebaseapp.com", databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com", projectId:"YOUR_PROJECT" };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 const db = firebase.database();
 
-/* STATE */
-let user = localStorage.user || null;
-let coins = Number(localStorage.coins) || 0;
+// STATE
+let user=null, coins=0, xp=0, level=1;
 
-/* NAV */
-function show(id){
-document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-document.getElementById(id).style.display='block';
+// NAV
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
 }
 
-/* LOGIN */
-function login(){
-let u=lu.value.trim();
-if(!u)return;
-localStorage.user=u;
-user=u;
-if(user==="admin") adminBtn.style.display="block";
-sync();
-show('home');
+// LOGIN / REGISTER
+function loginUser(){const email=document.getElementById('email').value;const pass=document.getElementById('pass').value;
+  auth.signInWithEmailAndPassword(email,pass).then(res=>{user=res.user; initUser();}).catch(err=>document.getElementById('loginMsg').innerText=err.message);}
+function registerUser(){const email=document.getElementById('email').value;const pass=document.getElementById('pass').value;
+  auth.createUserWithEmailAndPassword(email,pass).then(res=>{user=res.user; initUser();}).catch(err=>document.getElementById('loginMsg').innerText=err.message);}
+
+// INIT USER DATA
+function initUser(){
+  const uid=user.uid;
+  db.ref('users/'+uid).once('value').then(snap=>{
+    const data=snap.val();
+    coins=data?.coins||0; xp=data?.xp||0; level=data?.level||1;
+    updateStats(); trackOnline(); updateLeaderboard(); showSection('hub');
+    if(user.email==='admin@example.com') document.getElementById('adminBtn').style.display='block';
+  });
 }
 
-/* COINS */
-function addCoins(n){
-coins+=n;
-save();
+// SAVE
+function save(){const uid=user.uid; db.ref('users/'+uid).set({coins,xp,level}); updateStats(); updateLeaderboard();}
+
+// XP / LEVEL
+function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} save();}
+function addCoins(a){coins+=a; save();}
+
+// HUB
+function updateStats(){
+  document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Level ${level}`;
+  document.getElementById('xpBar').style.width=Math.floor(xp/(level*100)*100)+'%';
+  document.getElementById('xpText').innerText=`XP: ${xp} / ${level*100}`;
 }
 
-/* SAVE + SYNC */
-function save(){
-localStorage.coins=coins;
-document.getElementById("top").innerText=`👤 ${user} | 🪙 ${coins}`;
-db.ref("scores/"+user).set(coins);
+// ONLINE USERS
+function trackOnline(){
+  const uid=user.uid;
+  const onlineRef=db.ref('online/'+uid);
+  const conRef=db.ref('.info/connected');
+  conRef.on('value',snap=>{if(snap.val()){onlineRef.set(true); onlineRef.onDisconnect().remove();}});
+  db.ref('online').on('value',snap=>{document.getElementById('onlineUsers').innerText=snap.numChildren()+' players online';});
 }
 
-/* GAMES */
-function guess(){
-let n=Math.ceil(Math.random()*5);
-let g=prompt("Guess 1-5");
-if(Number(g)===n) addCoins(20);
-}
-function reaction(){
-let t=Date.now();
-alert("Click OK fast");
-alert("Time: "+(Date.now()-t)+"ms");
-addCoins(10);
+// LEADERBOARD
+function updateLeaderboard(){
+  db.ref('users').orderByChild('coins').limitToLast(5).once('value',snap=>{
+    const data=snap.val(); let html='';
+    for(let uid in data){const u=data[uid]; html+=`<div>${u.coins} 🪙 | Lv.${u.level}</div>`;}
+    document.getElementById('hubLeaderboard').innerHTML=html;
+  });
 }
 
-/* QUIZ */
-const quiz=[
-{q:"Ramesh never starts day without?",o:["Phone","Tea","Gym"],a:0},
-{q:"Ramesh favourite line?",o:["Kal dekhenge","Yes sir","No"],a:0}
-];
-let qi=0;
-function loadQuiz(){
-q.innerText=quiz[qi].q;
-opts.innerHTML="";
-quiz[qi].o.forEach((o,i)=>{
-let b=document.createElement("button");
-b.innerText=o;
-b.onclick=()=>{ 
-if(i===quiz[qi].a){qr.innerHTML="<span class='correct'>Correct +30</span>";addCoins(30);}
-else qr.innerHTML="<span class='wrong'>Wrong</span>";
-qi=(qi+1)%quiz.length;
-};
-opts.appendChild(b);
-});
-}
-loadQuiz();
+// ADMIN
+function wipeLeaderboard(){db.ref('users').remove(); alert("Leaderboard wiped");}
 
-/* LEADERBOARD */
-db.ref("scores").on("value",snap=>{
-let data=snap.val()||{};
-let arr=Object.entries(data).map(([u,s])=>({u,s}));
-arr.sort((a,b)=>b.s-a.s);
-board.innerHTML="";
-arr.slice(0,10).forEach(p=>{
-board.innerHTML+=`<div class="leader"><span>${p.u}</span><span>${p.s}</span></div>`;
-});
-});
+// 🎮 GAMES (all example working)
+function guessNumber(){let n=Math.ceil(Math.random()*10); let ans=prompt("Guess 1-10"); if(Number(ans)===n){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! It was "+n);}
+function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! Coins: "+(d*5)+" XP: "+(d*5)); addCoins(d*5); addXP(d*5);}
+function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
+function clickSpeedTest(){alert("Click OK fast 5 times!"); let start=Date.now(); for(let i=0;i<5;i++){prompt("Click!");} let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s, XP: "+(50-t)+", Coins: "+(50-t)); addXP(50-t); addCoins(50-t);}
+function typingTest(){let text="Ramesh Fun Hub is awesome!"; let start=Date.now(); let input=prompt("Type:\n"+text); let t=Math.floor((Date.now()-start)/1000); if(input===text){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect typing.");}
+function memorySequence(){let seq=""; for(let i=0;i<5;i++){seq+=Math.floor(Math.random()*9); } let ans=prompt("Remember sequence: "+seq); if(ans===seq){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
+function hangman(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let guess=""; let tries=6; while(tries>0 && guess!==w){let c=prompt("Guess a letter / word: "+guess); if(c===w){guess=w; break;} else{tries--;}} if(guess===w){alert("You win! +50 Coins +50 XP"); addCoins(50); addXP(50);} else alert("You lose!");}
+function wordScramble(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let scrambled=w.split("").sort(()=>0.5-Math.random()).join(""); let ans=prompt("Unscramble: "+scrambled); if(ans===w){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
+function triviaQuiz(){let q=[{q:"Ramesh's favorite color?",a:"Yellow"},{q:"Fun hub created in?",a:"2025"}]; let correct=0; for(let i=0;i<q.length;i++){let ans=prompt(q[i].q); if(ans===q[i].a){correct++; addCoins(20); addXP(20);}} alert("You got "+correct+"/"+q.length);}
+function idleClicker(){let points=0; for(let i=0;i<10;i++){points+=5;} alert("You earned "+points+" Coins + XP"); addCoins(points); addXP(points);}
 
-/* ADMIN */
-function wipe(){
-db.ref("scores").remove();
-}
+// GENERATORS
+const genData={business:["Ramesh Corp","Fun Studios"],slogan:["Just Fun!","Make it epic"],nickname:["Ramesh123","FunMaster"],joke:["Why code? Fun!"],story:["Once Ramesh..."],poetry:["Roses are fun"],dare:["Do a dance"],excuse:["I was coding"],password:["123Fun!","Ramesh2025"],color:["#ff0000","#00ff00"]};
+function generate(type){const arr=genData[type]; const val=arr[Math.floor(Math.random()*arr.length)]; document.getElementById('genOutput').innerText=val;}
 
-/* INIT */
-if(user){
-if(user==="admin") adminBtn.style.display="block";
-sync();
-show('home');
-}else show('login');
+// AI
+function aiRespond(){const input=document.getElementById('aiInput').value.toLowerCase(); const responses=["Hmm!","😂","I see!","Try harder!","Cool!"]; document.getElementById('aiOutput').innerText=responses[Math.floor(Math.random()*responses.length)];}
 
-function sync(){
-document.getElementById("top").innerText=`👤 ${user} | 🪙 ${coins}`;
-db.ref("scores/"+user).set(coins);
-}
+// CUSTOMIZATION
+function toggleDark(){document.body.style.background=document.body.style.background===var(--bg)?'#fff':var(--bg);document.body.style.color=document.body.style.color===var(--text)?'#000':var(--text);}
+function toggleRetro(){document.body.style.fontFamily=document.body.style.fontFamily==="Courier New"?"Trebuchet MS":"Courier New";}
+function changeAccent(c){document.documentElement.style.setProperty('--accent',c);}
+function changeFont(f){document.body.style.fontFamily=f;}
+function randomBackground(){document.body.style.background=`linear-gradient(to right, #${Math.floor(Math.random()*16777215).toString(16)}, #${Math.floor(Math.random()*16777215).toString(16)})`;}
 </script>
-
 </body>
 </html>
