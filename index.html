@@ -5,276 +5,2521 @@
 <title>Ramesh AI Fun Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root{--bg:#0f2027;--card:rgba(255,255,255,.12);--text:#fff;--accent:#00d4ff;}
-.light{--bg:#f2f2f2;--card:#fff;--text:#000;}
-.retro{font-family:"Courier New",monospace;filter:contrast(1.2) saturate(1.4);}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial;transition:.4s;overflow-x:hidden;}
-header{text-align:center;padding:15px;}
-button{padding:10px 14px;margin:6px;border:none;border-radius:6px;background:var(--accent);cursor:pointer;position:relative;overflow:hidden;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:20px;}
-.card{background:var(--card);padding:18px;border-radius:12px;text-align:center;cursor:pointer;transition:.3s;}
-.card:hover{transform:scale(1.07);}
-.section{display:none;padding:20px;text-align:center;animation:fade .4s;}
-@keyframes fade{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-input, select{padding:8px;margin:6px;}
-.output{margin:10px 0;padding:10px;background:var(--card);border-radius:6px;white-space:pre-line;}
-footer{text-align:center;padding:15px;opacity:.8;}
-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+:root{
+  --bg-gradient: linear-gradient(135deg,#ff00ff,#00e5ff);
+  --bg-gradient-dark: linear-gradient(135deg,#050816,#111827);
+  --bg-gradient-neon: linear-gradient(135deg,#ff00ff,#00f0ff,#ffea00);
+  --bg-current: var(--bg-gradient-neon);
+  --accent: #ff6bff;
+  --accent2:#00f0ff;
+  --text-main:#ffffff;
+  --card-bg:rgba(15,23,42,0.9);
+  --card-border:#38bdf8;
+  --shadow-main:0 0 20px rgba(0,0,0,0.4);
+  --font-main:'system-ui',sans-serif;
+  --font-pixel:'Courier New',monospace;
+  --font-fun:'Comic Sans MS','Comic Neue',system-ui;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  height:100%;
+  font-family:var(--font-main);
+  background-image:var(--bg-current);
+  color:var(--text-main);
+  overflow-x:hidden;
+}
+body{
+  display:flex;
+  flex-direction:column;
+}
+a{text-decoration:none;color:inherit;}
+button,input,select,textarea{
+  font-family:inherit;
+}
+#emojiTrail{
+  position:fixed;
+  pointer-events:none;
+  font-size:22px;
+  z-index:9999;
+}
+.app-shell{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:rgba(15,23,42,0.96);
+  backdrop-filter:blur(10px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.4);
+}
+.topbar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 12px;
+  max-width:1200px;
+  margin:0 auto;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:800;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  font-size:14px;
+}
+.brand-emoji{
+  font-size:20px;
+}
+.nav-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  justify-content:flex-end;
+}
+.nav-links button{
+  border:none;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(30,64,175,0.6);
+  color:#e5e7eb;
+  font-size:11px;
+  cursor:pointer;
+  transition:background 0.2s,transform 0.1s;
+}
+.nav-links button:hover{
+  background:rgba(59,130,246,0.95);
+  transform:translateY(-1px);
+}
+.nav-links button.active{
+  background:linear-gradient(135deg,#f97316,#ec4899);
+  color:#0f172a;
+}
+.main{
+  flex:1;
+  max-width:1200px;
+  width:100%;
+  margin:0 auto;
+  padding:12px;
+}
+.section{
+  display:none;
+  animation:fadeIn 0.35s ease-out;
+}
+.section.active{
+  display:block;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.section-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:12px 0;
+}
+.section-title{
+  font-size:20px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.section-sub{
+  font-size:12px;
+  opacity:0.9;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:10px;
+}
+.card{
+  background:var(--card-bg);
+  border:1px solid rgba(148,163,184,0.6);
+  border-radius:10px;
+  padding:10px;
+  box-shadow:var(--shadow-main);
+  position:relative;
+  overflow:hidden;
+}
+.card-title{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:4px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.card-sub{
+  font-size:11px;
+  opacity:0.85;
+  margin-bottom:6px;
+}
+.card-actions{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.btn{
+  border:none;
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:11px;
+  cursor:pointer;
+  background:radial-gradient(circle at top,var(--accent),#ec4899);
+  color:#0f172a;
+  box-shadow:0 0 8px rgba(236,72,153,0.7);
+}
+.btn.alt{
+  background:rgba(15,23,42,0.8);
+  color:#e5e7eb;
+  border:1px solid rgba(148,163,184,0.7);
+  box-shadow:none;
+}
+.btn.small{
+  padding:3px 8px;
+  font-size:10px;
+}
+.btn:active{
+  transform:scale(0.96);
+}
+.badge{
+  font-size:9px;
+  padding:2px 6px;
+  border-radius:999px;
+  background:rgba(56,189,248,0.18);
+  border:1px solid rgba(56,189,248,0.7);
+}
+.tag{
+  display:inline-block;
+  font-size:9px;
+  padding:1px 5px;
+  border-radius:999px;
+  background:rgba(75,85,99,0.7);
+  margin-left:3px;
+}
+input[type="number"],
+input[type="text"],
+input[type="password"],
+textarea,
+select{
+  border-radius:6px;
+  border:1px solid rgba(148,163,184,0.9);
+  background:#020617;
+  color:#e5e7eb;
+  padding:5px 7px;
+  font-size:11px;
+  width:100%;
+}
+textarea{resize:vertical;min-height:50px;max-height:130px;}
+.input-row{
+  display:flex;
+  gap:6px;
+  margin-top:4px;
+}
+.input-row>*{flex:1;}
+.game-output{
+  margin-top:5px;
+  font-size:11px;
+  background:rgba(15,23,42,0.9);
+  border-radius:6px;
+  padding:5px 6px;
+  min-height:18px;
+  border:1px dashed rgba(148,163,184,0.7);
+}
+.game-area{
+  margin-top:6px;
+  padding:6px;
+  border-radius:8px;
+  border:1px solid rgba(148,163,184,0.7);
+  background:rgba(15,23,42,0.8);
+  font-size:11px;
+}
+.flex{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.flex-between{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:6px;
+}
+.pill{
+  padding:3px 8px;
+  font-size:10px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,0.7);
+}
+.timer-text{font-weight:700;color:#f97316;}
+.highlight{color:#22c55e;font-weight:600;}
+.small-text{font-size:10px;opacity:0.85;}
+.game-grid{
+  display:grid;
+  gap:4px;
+}
+.game-grid-4{grid-template-columns:repeat(4,1fr);}
+.game-grid-5{grid-template-columns:repeat(5,1fr);}
+.tile-btn{
+  border:none;
+  border-radius:6px;
+  padding:10px 0;
+  font-size:12px;
+  background:rgba(30,64,175,0.8);
+  color:#e5e7eb;
+  cursor:pointer;
+}
+.tile-btn.empty{
+  background:rgba(15,23,42,0.95);
+  border:1px dashed rgba(148,163,184,0.4);
+}
+.quiz-option{
+  border-radius:6px;
+  padding:5px 6px;
+  border:1px solid rgba(148,163,184,0.9);
+  margin-top:4px;
+  font-size:11px;
+  cursor:pointer;
+}
+.quiz-option.correct{background:rgba(22,163,74,0.5);border-color:#22c55e;}
+.quiz-option.wrong{background:rgba(220,38,38,0.5);border-color:#ef4444;}
+.flashcard{
+  border-radius:8px;
+  padding:10px;
+  border:1px dashed rgba(148,163,184,0.9);
+  text-align:center;
+  cursor:pointer;
+}
+.maze-grid{
+  display:grid;
+  grid-template-columns:repeat(7,20px);
+  grid-auto-rows:20px;
+  gap:2px;
+}
+.maze-cell{
+  width:20px;
+  height:20px;
+  border-radius:4px;
+}
+.maze-wall{background:#020617;}
+.maze-path{background:#1e293b;}
+.maze-start{background:#22c55e;}
+.maze-end{background:#f97316;}
+.maze-player{background:#e5e7eb;}
+.chip{
+  border-radius:999px;
+  padding:2px 6px;
+  font-size:9px;
+  border:1px solid rgba(148,163,184,0.9);
+}
+.stats-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:6px;
+  font-size:10px;
+}
+.progress-bar{
+  width:100%;
+  height:6px;
+  border-radius:999px;
+  background:#020617;
+  overflow:hidden;
+  margin-top:4px;
+}
+.progress-fill{
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22c55e,#a855f7);
+  width:20%;
+}
+.footer{
+  margin-top:10px;
+  padding:10px 0 16px;
+  font-size:11px;
+  text-align:center;
+  opacity:0.9;
+}
+@media (max-width:640px){
+  .nav-links{justify-content:flex-start;overflow-x:auto;}
+  .brand{font-size:11px;}
+  .section-title{font-size:17px;}
+}
 </style>
 </head>
 <body>
-<canvas id="confetti"></canvas>
-<header>
-<h1 id="title">🤖 Ramesh AI Fun Hub</h1>
-<p>Central Mega Playground</p>
-<button onclick="toggleMode()">🌗 Dark/Light</button>
-<button onclick="toggleRetro()">🕹 Retro</button>
-<p>Visits: <span id="visits">0</span></p>
-</header>
+<div id="emojiTrail"></div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-emoji">🤖🎮✨</span>
+        <span>Ramesh AI Fun Hub</span>
+      </div>
+      <div class="nav-links">
+        <button data-target="hub" class="active">HUB</button>
+        <button data-target="games">Games</button>
+        <button data-target="generators">Generators</button>
+        <button data-target="ai">AI Chat</button>
+        <button data-target="funrandom">Fun & Random</button>
+        <button data-target="custom">Customization</button>
+        <button data-target="learning">Learning</button>
+        <button data-target="easter">Easter Eggs</button>
+        <button data-target="social">Social</button>
+        <button data-target="stats">Stats</button>
+      </div>
+    </div>
+  </header>
 
-<!-- HUB -->
-<div id="hub" class="grid">
-<!-- 15 Categories -->
-<div class="card" onclick="openTool('cat1')">🏢 Business & Creativity</div>
-<div class="card" onclick="openTool('cat2')">🎨 Fun & Random</div>
-<div class="card" onclick="openTool('cat3')">🧩 Emoji & Riddle</div>
-<div class="card" onclick="openTool('cat4')">🎮 Quick Games</div>
-<div class="card" onclick="openTool('cat5')">🖱 Skill Games</div>
-<div class="card" onclick="openTool('cat6')">❓ Trivia & Knowledge</div>
-<div class="card" onclick="openTool('cat7')">⏱ Clicker & Idle Games</div>
-<div class="card" onclick="openTool('cat8')">📊 Analytics & Stats</div>
-<div class="card" onclick="openTool('cat9')">⚙ Customization</div>
-<div class="card" onclick="openTool('cat10')">🥚 Easter Eggs & Secrets</div>
-<div class="card" onclick="openTool('cat11')">💬 Social & Sharing Fun</div>
-<div class="card" onclick="openTool('cat12')">🧠 Learning & Challenge</div>
-<div class="card" onclick="openTool('cat13')">🤖 AI Fun Tools</div>
-<div class="card" onclick="openTool('cat14')">✨ Visual Fun & Animations</div>
-<div class="card" onclick="openTool('cat15')">🗂 Hub & Navigation</div>
+  <main class="main">
+    <!-- HUB -->
+    <section id="hub" class="section active">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🏠 HUB</div>
+          <div class="section-sub">Jump into any **zone** and let chaos + brain power do the rest.</div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">
+            <span>🎮 Games Zone</span>
+            <span class="badge">Arcade</span>
+          </div>
+          <p class="card-sub">Mini-games, tests and puzzles packed into one **wild** playground.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('games')">Enter Games</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>📝 Generators Lab</span><span class="badge">Randomizer</span>
+          </div>
+          <p class="card-sub">Names, slogans, stories, excuses, passwords, palettes, pure chaos.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('generators')">Open Lab</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🤖 AI Corner</span><span class="badge">Roleplay</span>
+          </div>
+          <p class="card-sub">Chat with fake smart AI personalities, get fortunes and moods.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('ai')">Talk to AI</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🌈 Fun & Random</span><span class="badge">Chaos</span>
+          </div>
+          <p class="card-sub">Confetti, particles, emoji storms, surprises and mood randomness.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('funrandom')">Summon Chaos</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🎨 Custom & Themes</span><span class="badge">Style</span>
+          </div>
+          <p class="card-sub">Neon, dark, retro pixel, chaos modes, fonts and gradients.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('custom')">Customize</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🧠 Brain Zone</span><span class="badge">Learning</span>
+          </div>
+          <p class="card-sub">Math puzzles, logic, vocab and pattern memory races.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('learning')">Train Brain</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🥚 Secrets</span><span class="badge">Hidden</span>
+          </div>
+          <p class="card-sub">Find secret clicks, console codes and mysterious modes.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('easter')">Hunt Eggs</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>💬 Social Zone</span><span class="badge">Share</span>
+          </div>
+          <p class="card-sub">Compliments, prompts, emoji packs and sharable tags.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('social')">Open Social</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>📊 Ramesh Analytics</span><span class="badge">Fake</span>
+          </div>
+          <p class="card-sub">Games played, fake users, achievements and mood meters.</p>
+          <div class="card-actions">
+            <button class="btn" onclick="switchSection('stats')">View Stats</button>
+          </div>
+        </div>
+      </div>
+      <div class="stats-strip" style="margin-top:10px;">
+        <span class="chip">Tip: Some secrets unlock when you click random tiny things a lot.</span>
+        <span class="chip">Open console and type <strong>rameshSecret()</strong>.</span>
+      </div>
+    </section>
+
+    <!-- GAMES -->
+    <section id="games" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🎮 Games Arcade</div>
+          <div class="section-sub">Play everything from number guessing to maze navigation and idle clicking.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Guess the Number + Levels -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔢 Guess the Number</span>
+            <span class="tag">Hints + Levels</span>
+          </div>
+          <p class="card-sub">Pick difficulty, then guess with hot/cold hints and limited tries.</p>
+          <div class="game-area">
+            <div class="flex-between">
+              <span class="small-text">Difficulty</span>
+              <select id="guessLevel">
+                <option value="easy">Easy (1-50)</option>
+                <option value="medium">Medium (1-100)</option>
+                <option value="hard">Hard (1-500)</option>
+              </select>
+            </div>
+            <div class="input-row">
+              <input id="guessInput" type="number" placeholder="Your guess">
+              <button class="btn small" onclick="startGuessGame()">New</button>
+              <button class="btn small alt" onclick="submitGuess()">Guess</button>
+            </div>
+            <div class="game-output" id="guessOutput"></div>
+            <div class="small-text">Tries left: <span id="guessTries">-</span></div>
+          </div>
+        </div>
+
+        <!-- Dice Roller -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎲 Dice Roller</span>
+            <span class="tag">Luck</span>
+          </div>
+          <p class="card-sub">Roll 1 or 2 dice and watch the emojis spin.</p>
+          <div class="game-area">
+            <div class="flex-between">
+              <div class="small-text">Dice count</div>
+              <select id="diceCount">
+                <option value="1">1 die</option>
+                <option value="2">2 dice</option>
+              </select>
+            </div>
+            <div class="card-actions" style="margin-top:6px;">
+              <button class="btn small" onclick="rollDice()">Roll</button>
+            </div>
+            <div class="game-output" id="diceOutput"></div>
+          </div>
+        </div>
+
+        <!-- Rock Paper Scissors -->
+        <div class="card">
+          <div class="card-title">
+            <span>✊✋✌️ RPS vs AI</span><span class="tag">Mind Games</span>
+          </div>
+          <p class="card-sub">AI pretends to be smart and reacts to your last moves.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="playRPS('rock')">Rock</button>
+              <button class="btn small" onclick="playRPS('paper')">Paper</button>
+              <button class="btn small" onclick="playRPS('scissors')">Scissors</button>
+            </div>
+            <div class="game-output" id="rpsOutput"></div>
+            <div class="small-text">Score: You <span id="rpsUserScore">0</span> – <span id="rpsAiScore">0</span> AI</div>
+          </div>
+        </div>
+
+        <!-- Click Speed Test -->
+        <div class="card">
+          <div class="card-title">
+            <span>🖱️ Click Speed Test</span><span class="tag">5s</span>
+          </div>
+          <p class="card-sub">Click as fast as possible in 5 seconds to reveal your animal spirit.</p>
+          <div class="game-area">
+            <div class="flex-between">
+              <span class="small-text">Time left: <span class="timer-text" id="clickTimer">5.00</span>s</span>
+              <button class="btn small" onclick="startClickTest()">Start</button>
+            </div>
+            <button id="clickButton" class="btn" style="margin-top:6px;width:100%;" onclick="registerClick()" disabled>Click me!</button>
+            <div class="game-output" id="clickOutput"></div>
+          </div>
+        </div>
+
+        <!-- Typing Speed Test -->
+        <div class="card">
+          <div class="card-title">
+            <span>⌨️ Typing Speed Test</span><span class="tag">WPM + Accuracy</span>
+          </div>
+          <p class="card-sub">Type the prompt, then see WPM and accuracy stats.</p>
+          <div class="game-area">
+            <div class="small-text">Prompt:</div>
+            <div id="typingPrompt" class="game-output"></div>
+            <textarea id="typingInput" placeholder="Start typing here..." onfocus="startTypingTest()"></textarea>
+            <div class="card-actions">
+              <button class="btn small" onclick="resetTypingTest()">New Prompt</button>
+            </div>
+            <div class="game-output" id="typingStats"></div>
+          </div>
+        </div>
+
+        <!-- Memory Card Matching -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧠 Memory Match</span><span class="tag">Emoji</span>
+          </div>
+          <p class="card-sub">Flip cards and match emoji pairs with the fewest moves.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="initMemoryGame()">Restart</button>
+            </div>
+            <div class="game-grid game-grid-4" id="memoryGrid"></div>
+            <div class="small-text">Moves: <span id="memoryMoves">0</span> • Matches: <span id="memoryMatches">0</span>/8</div>
+          </div>
+        </div>
+
+        <!-- Hangman -->
+        <div class="card">
+          <div class="card-title">
+            <span>🪢 Hangman</span><span class="tag">Words</span>
+          </div>
+          <p class="card-sub">Guess letters before the stick figure runs out of parts.</p>
+          <div class="game-area">
+            <div id="hangmanWord" class="game-output"></div>
+            <div class="input-row">
+              <input id="hangmanLetter" maxlength="1" placeholder="Letter">
+              <button class="btn small" onclick="guessHangman()">Guess</button>
+              <button class="btn small alt" onclick="initHangman()">New</button>
+            </div>
+            <div class="small-text">Lives: <span id="hangmanLives"></span></div>
+            <div class="small-text">Used: <span id="hangmanUsed"></span></div>
+          </div>
+        </div>
+
+        <!-- Word Scramble -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔀 Word Scramble</span><span class="tag">Unscramble</span>
+          </div>
+          <p class="card-sub">Unscramble letters to find the hidden word.</p>
+          <div class="game-area">
+            <div id="scrambleWord" class="game-output"></div>
+            <div class="input-row">
+              <input id="scrambleGuess" placeholder="Your guess">
+              <button class="btn small" onclick="submitScramble()">Submit</button>
+              <button class="btn small alt" onclick="initScramble()">New</button>
+            </div>
+            <div class="game-output" id="scrambleOutput"></div>
+          </div>
+        </div>
+
+        <!-- Puzzle Slider -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧩 15-Puzzle</span><span class="tag">Sliding</span>
+          </div>
+          <p class="card-sub">Slide tiles 1–15 into correct order using the empty space.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="initSlider()">Shuffle</button>
+            </div>
+            <div class="game-grid game-grid-4" id="sliderGrid"></div>
+            <div class="small-text">Moves: <span id="sliderMoves">0</span></div>
+          </div>
+        </div>
+
+        <!-- Trivia Quiz -->
+        <div class="card">
+          <div class="card-title">
+            <span>❓ Trivia Quiz</span><span class="tag">MCQ</span>
+          </div>
+          <p class="card-sub">Answer quick mixed-topic questions and see your score.</p>
+          <div class="game-area">
+            <div id="triviaQuestion" class="game-output"></div>
+            <div id="triviaOptions"></div>
+            <div class="card-actions">
+              <button class="btn small" onclick="nextTrivia()">Next</button>
+            </div>
+            <div class="small-text">Score: <span id="triviaScore">0</span> / <span id="triviaTotal">0</span></div>
+          </div>
+        </div>
+
+        <!-- Flashcards Quiz -->
+        <div class="card">
+          <div class="card-title">
+            <span>🃏 Flashcards</span><span class="tag">Vocab</span>
+          </div>
+          <p class="card-sub">Tap card to flip between term and meaning.</p>
+          <div class="game-area">
+            <div id="flashcard" class="flashcard" onclick="flipFlashcard()"></div>
+            <div class="card-actions">
+              <button class="btn small" onclick="nextFlashcard()">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Name That Tune -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎵 Name That Tune</span><span class="tag">Emoji</span>
+          </div>
+          <p class="card-sub">Guess the song title using only emoji hints.</p>
+          <div class="game-area">
+            <div id="tuneEmoji" class="game-output"></div>
+            <div class="input-row">
+              <input id="tuneGuess" placeholder="Song name">
+              <button class="btn small" onclick="submitTune()">Guess</button>
+              <button class="btn small alt" onclick="nextTune()">New</button>
+            </div>
+            <div class="game-output" id="tuneOutput"></div>
+          </div>
+        </div>
+
+        <!-- Idle / Clicker Game -->
+        <div class="card">
+          <div class="card-title">
+            <span>⚙️ Ramesh Clicker</span><span class="tag">Idle</span>
+          </div>
+          <p class="card-sub">Collect R-Coins and buy upgrades that auto-generate more coins.</p>
+          <div class="game-area">
+            <div class="flex-between">
+              <span class="small-text">R-Coins: <span id="idleCoins">0</span></span>
+              <span class="small-text">Auto/s: <span id="idleAuto">0</span></span>
+            </div>
+            <button class="btn" style="width:100%;margin-top:6px;" onclick="clickIdle()">Click for R-Coin</button>
+            <div class="card-actions">
+              <button class="btn small alt" onclick="buyIdleUpgrade(1,10,1)">+1/s (10)</button>
+              <button class="btn small alt" onclick="buyIdleUpgrade(5,40,2)">+5/s (40)</button>
+              <button class="btn small alt" onclick="buyIdleUpgrade(20,120,3)">+20/s (120)</button>
+            </div>
+            <div class="game-output" id="idleOutput"></div>
+          </div>
+        </div>
+
+        <!-- Maze / Grid Navigation -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧱 Maze Runner</span><span class="tag">Grid</span>
+          </div>
+          <p class="card-sub">Use arrows or buttons to move from start to goal.</p>
+          <div class="game-area">
+            <div id="mazeGrid" class="maze-grid"></div>
+            <div class="card-actions">
+              <button class="btn small" onclick="moveMaze('up')">↑</button>
+              <button class="btn small" onclick="moveMaze('left')">←</button>
+              <button class="btn small" onclick="moveMaze('down')">↓</button>
+              <button class="btn small" onclick="moveMaze('right')">→</button>
+              <button class="btn small alt" onclick="initMaze()">Reset</button>
+            </div>
+            <div class="game-output" id="mazeOutput"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GENERATORS -->
+    <section id="generators" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">📝 Generators Lab</div>
+          <div class="section-sub">Click a button and get instant names, jokes, stories, excuses and more.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Business Name -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏢 Business Name</span><span class="tag">Startups</span>
+          </div>
+          <p class="card-sub">Get techy, meme-ish and India-flavored business names.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('business')">Generate</button>
+            <div class="game-output" id="businessOutput"></div>
+          </div>
+        </div>
+        <!-- Slogan -->
+        <div class="card">
+          <div class="card-title">
+            <span>📣 Slogan Generator</span><span class="tag">Taglines</span>
+          </div>
+          <p class="card-sub">Motivational, dramatic and slightly unhinged slogans.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('slogan')">Generate</button>
+            <div class="game-output" id="sloganOutput"></div>
+          </div>
+        </div>
+        <!-- Nickname / Gamertag -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎮 Gamertag Generator</span><span class="tag">Nicknames</span>
+          </div>
+          <p class="card-sub">Edgy, cute and AI-themed nicknames.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('nick')">Generate</button>
+            <div class="game-output" id="nickOutput"></div>
+          </div>
+        </div>
+        <!-- Joke -->
+        <div class="card">
+          <div class="card-title">
+            <span>🤣 Joke Generator</span><span class="tag">PG</span>
+          </div>
+          <p class="card-sub">Nerd jokes, dad jokes and general nonsense.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('joke')">Generate</button>
+            <div class="game-output" id="jokeOutput"></div>
+          </div>
+        </div>
+        <!-- Mini Story -->
+        <div class="card">
+          <div class="card-title">
+            <span>📚 Mini Story</span><span class="tag">Tiny</span>
+          </div>
+          <p class="card-sub">Instant micro stories with random mash-ups.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('story')">Generate</button>
+            <div class="game-output" id="storyOutput"></div>
+          </div>
+        </div>
+        <!-- Poetry -->
+        <div class="card">
+          <div class="card-title">
+            <span>🪄 Poetry Generator</span><span class="tag">Deep-ish</span>
+          </div>
+          <p class="card-sub">Silly rhymes and fake deep poetry combos.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('poem')">Generate</button>
+            <div class="game-output" id="poemOutput"></div>
+          </div>
+        </div>
+        <!-- Challenge / Dare -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎯 Challenge / Dare</span><span class="tag">Safe</span>
+          </div>
+          <p class="card-sub">School-friendly random tasks and mini dares.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('challenge')">Generate</button>
+            <div class="game-output" id="challengeOutput"></div>
+          </div>
+        </div>
+        <!-- Random Excuse -->
+        <div class="card">
+          <div class="card-title">
+            <span>🙈 Excuse Generator</span><span class="tag">Oops</span>
+          </div>
+          <p class="card-sub">Ridiculous reasons for being late or not doing work.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('excuse')">Generate</button>
+            <div class="game-output" id="excuseOutput"></div>
+          </div>
+        </div>
+        <!-- Password -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔐 Password Generator</span><span class="tag">Strong</span>
+          </div>
+          <p class="card-sub">Generate strong random passwords with one click.</p>
+          <div class="game-area">
+            <div class="input-row">
+              <input id="passwordLength" type="number" value="12" min="6" max="32">
+              <button class="btn small" onclick="generatePassword()">Generate</button>
+            </div>
+            <div class="game-output" id="passwordOutput"></div>
+          </div>
+        </div>
+        <!-- Color Palette -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎨 Color Palette</span><span class="tag">HEX</span>
+          </div>
+          <p class="card-sub">Generate 5-color palettes, tap to copy hex codes.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generatePalette()">Generate</button>
+            <div id="paletteOutput" class="flex" style="margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI CHAT -->
+    <section id="ai" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🤖 AI Chat Corner</div>
+          <div class="section-sub">Pick a personality and chat, get advice, fortunes and mood reads.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Chat with AI -->
+        <div class="card">
+          <div class="card-title">
+            <span>💬 Chat with AI</span>
+            <span class="tag">Simulated</span>
+          </div>
+          <p class="card-sub">Type anything and get quirky AI style responses.</p>
+          <div class="game-area">
+            <div class="flex-between">
+              <span class="small-text">Personality</span>
+              <select id="aiPersonality">
+                <option value="wise">Wise Guru</option>
+                <option value="chaos">Chaotic Troll</option>
+                <option value="friendly">Supportive Friend</option>
+                <option value="robot">Serious Robot</option>
+              </select>
+            </div>
+            <div class="input-row" style="margin-top:6px;">
+              <input id="aiMessage" placeholder="Say something...">
+              <button class="btn small" onclick="chatAI()">Send</button>
+            </div>
+            <div class="game-output" id="aiChatLog" style="max-height:140px;overflow-y:auto;"></div>
+          </div>
+        </div>
+
+        <!-- AI Advice -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧭 AI Advice</span><span class="tag">Life + Study</span>
+          </div>
+          <p class="card-sub">Random advice on school, productivity and creative life.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('advice')">Get Advice</button>
+            <div class="game-output" id="adviceOutput"></div>
+          </div>
+        </div>
+
+        <!-- AI Fortune Teller -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔮 AI Fortune Teller</span><span class="tag">Future-ish</span>
+          </div>
+          <p class="card-sub">One or two sentences predicting your near future.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('fortune')">Reveal Fortune</button>
+            <div class="game-output" id="fortuneOutput"></div>
+          </div>
+        </div>
+
+        <!-- AI Mood Detector -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎭 AI Mood Detector</span><span class="tag">Guess</span>
+          </div>
+          <p class="card-sub">Type text and AI guesses your mood with an emoji.</p>
+          <div class="game-area">
+            <textarea id="moodText" placeholder="Describe your day or paste a message..."></textarea>
+            <div class="card-actions">
+              <button class="btn small" onclick="detectMood()">Detect</button>
+            </div>
+            <div class="game-output" id="moodOutput"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FUN & RANDOM -->
+    <section id="funrandom" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🌈 Fun & Random</div>
+          <div class="section-sub">Emoji storms, facts, moods, confetti and daily surprises.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Random Emoji Combos -->
+        <div class="card">
+          <div class="card-title">
+            <span>😜 Random Emoji Combo</span><span class="tag">Chaos</span>
+          </div>
+          <p class="card-sub">Get wild emoji combos to describe any mood.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('emojiCombo')">Generate</button>
+            <div class="game-output" id="emojiComboOutput"></div>
+          </div>
+        </div>
+
+        <!-- Random Fun Facts -->
+        <div class="card">
+          <div class="card-title">
+            <span>📚 Fun Facts</span><span class="tag">Trivia</span>
+          </div>
+          <p class="card-sub">Tiny bites of science, space, history and randomness.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('fact')">New Fact</button>
+            <div class="game-output" id="factOutput"></div>
+          </div>
+        </div>
+
+        <!-- Random Mood Generator -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌡️ Random Mood</span><span class="tag">Vibe</span>
+          </div>
+          <p class="card-sub">Let the page decide your mood label and emoji.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('mood')">Roll Mood</button>
+            <div class="game-output" id="moodRandomOutput"></div>
+          </div>
+        </div>
+
+        <!-- Confetti trigger -->
+        <div class="card">
+          <div class="card-title">
+            <span>🎉 Confetti Blast</span><span class="tag">Visual</span>
+          </div>
+          <p class="card-sub">Press once. Try not to spam. (Actually, spam it.)</p>
+          <div class="game-area">
+            <button class="btn small" onclick="confetti()">Confetti!</button>
+            <div class="game-output small-text">Confetti is just particles and emojis flying across the screen.</div>
+          </div>
+        </div>
+
+        <!-- Particle effects -->
+        <div class="card">
+          <div class="card-title">
+            <span>✨ Particle Burst</span><span class="tag">Visual</span>
+          </div>
+          <p class="card-sub">Create a small particle burst at your cursor.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="particleBurst()">Burst</button>
+            <div class="game-output small-text">Move your cursor and tap burst multiple times for a mini light show.</div>
+          </div>
+        </div>
+
+        <!-- Daily Random Surprise -->
+        <div class="card">
+          <div class="card-title">
+            <span>📅 Daily Surprise</span><span class="tag">Mystery</span>
+          </div>
+          <p class="card-sub">One special message per date plus a random bonus.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="dailySurprise()">Reveal</button>
+            <div class="game-output" id="dailyOutput"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CUSTOMIZATION -->
+    <section id="custom" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🎨 Customization & Visuals</div>
+          <div class="section-sub">Switch themes, fonts, cursors, gradients and secret modes.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Theme Mode -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌓 Theme Mode</span><span class="tag">Light/Dark/Neon</span>
+          </div>
+          <p class="card-sub">Choose between bright, dark and neon hub vibes.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="setTheme('light')">Light</button>
+              <button class="btn small" onclick="setTheme('dark')">Dark</button>
+              <button class="btn small" onclick="setTheme('neon')">Neon</button>
+            </div>
+            <div class="game-output small-text">Default is Neon. Some secrets may override this temporarily.</div>
+          </div>
+        </div>
+
+        <!-- Retro Pixel Mode -->
+        <div class="card">
+          <div class="card-title">
+            <span>🕹️ Retro Pixel</span><span class="tag">Visual</span>
+          </div>
+          <p class="card-sub">Make the hub look like an old-school console.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="toggleRetro()">Toggle Retro Mode</button>
+            <div class="game-output small-text">Pixel font, borders and subtle CRT-style changes.</div>
+          </div>
+        </div>
+
+        <!-- Accent Color Picker -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌈 Accent Color</span><span class="tag">Brand</span>
+          </div>
+          <p class="card-sub">Pick a custom accent or load a preset.</p>
+          <div class="game-area">
+            <div class="input-row">
+              <input id="accentPicker" type="color" value="#ff6bff" onchange="changeAccent(this.value)">
+              <button class="btn small" onclick="changeAccent('#ff6bff')">Pink</button>
+              <button class="btn small" onclick="changeAccent('#22c55e')">Green</button>
+              <button class="btn small" onclick="changeAccent('#38bdf8')">Cyan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Font Switcher -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔤 Font Switcher</span><span class="tag">Text</span>
+          </div>
+          <p class="card-sub">Swap between clean, pixel and fun fonts.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="setFont('clean')">Clean</button>
+              <button class="btn small" onclick="setFont('pixel')">Pixel</button>
+              <button class="btn small" onclick="setFont('fun')">Fun</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Background gradient changer -->
+        <div class="card">
+          <div class="card-title">
+            <span>🧪 Gradients</span><span class="tag">Background</span>
+          </div>
+          <p class="card-sub">Switch between named gradient themes.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="setGradient('sunset')">Sunset</button>
+              <button class="btn small" onclick="setGradient('ocean')">Ocean</button>
+              <button class="btn small" onclick="setGradient('matrix')">Matrix</button>
+              <button class="btn small" onclick="setGradient('candy')">Candy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cursor mode -->
+        <div class="card">
+          <div class="card-title">
+            <span>🖱️ Emoji Cursor Trail</span><span class="tag">Cursor</span>
+          </div>
+          <p class="card-sub">Choose a cursor trail emoji and watch it follow you.</p>
+          <div class="game-area">
+            <div class="card-actions">
+              <button class="btn small" onclick="setCursorEmoji('✨')">✨</button>
+              <button class="btn small" onclick="setCursorEmoji('🤖')">🤖</button>
+              <button class="btn small" onclick="setCursorEmoji('🔥')">🔥</button>
+              <button class="btn small" onclick="setCursorEmoji('⭐')">⭐</button>
+            </div>
+            <div class="card-actions">
+              <button class="btn small alt" onclick="toggleCursorTrail(true)">Trail ON</button>
+              <button class="btn small alt" onclick="toggleCursorTrail(false)">Trail OFF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEARNING & BRAIN -->
+    <section id="learning" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🧠 Learning & Brain</div>
+          <div class="section-sub">Math puzzles, logic questions, vocab tests and pattern memory.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Math Puzzles -->
+        <div class="card">
+          <div class="card-title">
+            <span>➕ Math Puzzles</span><span class="tag">Numbers</span>
+          </div>
+          <p class="card-sub">Quick arithmetic and sequence puzzles.</p>
+          <div class="game-area">
+            <div id="mathPuzzle" class="game-output"></div>
+            <div class="input-row">
+              <input id="mathAnswer" type="number" placeholder="Answer">
+              <button class="btn small" onclick="submitMath()">Submit</button>
+              <button class="btn small alt" onclick="newMathPuzzle()">New</button>
+            </div>
+            <div class="game-output" id="mathOutput"></div>
+          </div>
+        </div>
+
+        <!-- Logic Puzzles -->
+        <div class="card">
+          <div class="card-title">
+            <span>🤔 Logic Puzzles</span><span class="tag">Riddles</span>
+          </div>
+          <p class="card-sub">Short riddles with multiple choice answers.</p>
+          <div class="game-area">
+            <div id="logicQuestion" class="game-output"></div>
+            <div id="logicOptions"></div>
+            <div class="card-actions">
+              <button class="btn small" onclick="nextLogic()">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Race -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏁 Typing Race</span><span class="tag">Speed</span>
+          </div>
+          <p class="card-sub">Race against an AI ghost speed and beat your best time.</p>
+          <div class="game-area">
+            <div class="small-text">Text:</div>
+            <div id="racePrompt" class="game-output"></div>
+            <textarea id="raceInput" placeholder="Type here to start race..." onfocus="startRace()"></textarea>
+            <div class="game-output" id="raceStats"></div>
+          </div>
+        </div>
+
+        <!-- Vocabulary Challenge -->
+        <div class="card">
+          <div class="card-title">
+            <span>📖 Vocabulary Challenge</span><span class="tag">English</span>
+          </div>
+          <p class="card-sub">Pick the correct meaning for each word.</p>
+          <div class="game-area">
+            <div id="vocabWord" class="game-output"></div>
+            <div id="vocabOptions"></div>
+            <div class="card-actions">
+              <button class="btn small" onclick="nextVocab()">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern Memory Game (Simon) -->
+        <div class="card">
+          <div class="card-title">
+            <span>🔔 Pattern Memory</span><span class="tag">Simon</span>
+          </div>
+          <p class="card-sub">Watch the sequence of colors and repeat it.</p>
+          <div class="game-area">
+            <div class="game-grid game-grid-4" id="patternGrid">
+              <button class="tile-btn" style="background:#f97316;" onclick="pressPattern(0)"></button>
+              <button class="tile-btn" style="background:#22c55e;" onclick="pressPattern(1)"></button>
+              <button class="tile-btn" style="background:#38bdf8;" onclick="pressPattern(2)"></button>
+              <button class="tile-btn" style="background:#e879f9;" onclick="pressPattern(3)"></button>
+            </div>
+            <div class="card-actions">
+              <button class="btn small" onclick="startPattern()">Start</button>
+            </div>
+            <div class="game-output" id="patternOutput"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EASTER EGGS -->
+    <section id="easter" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🥚 Easter Eggs & Secrets</div>
+          <div class="section-sub">Hidden modes, secret buttons and console-only commands.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">
+            <span>🔒 Secret Buttons</span><span class="tag">Hidden</span>
+          </div>
+          <p class="card-sub">Click random corners and small icons to trigger weirdness.</p>
+          <div class="game-area">
+            <div class="game-output small-text">
+              Try clicking the brand logo multiple times. Some achievements unlock only after suspicious behaviour.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🧬 Chaos Mode</span><span class="tag">Secret</span>
+          </div>
+          <p class="card-sub">A color and animation overload mode.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="toggleChaos()">Toggle Chaos Mode</button>
+            <div class="game-output small-text">
+              Hint: There is also a hidden way to trigger chaos without pressing this button.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>💻 Console Easter Egg</span><span class="tag">Dev Tools</span>
+          </div>
+          <p class="card-sub">Open dev tools (F12) and type a secret function.</p>
+          <div class="game-area">
+            <div class="game-output small-text">
+              Type <strong>rameshSecret()</strong> and press Enter. Something special will happen.
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🧩 Hidden Messages</span><span class="tag">Mystery</span>
+          </div>
+          <p class="card-sub">Some generators output rare ultra messages.</p>
+          <div class="game-area">
+            <div class="game-output small-text">
+              Rare outputs unlock achievements. Keep randomizing business names and stories.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOCIAL & SHARING -->
+    <section id="social" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">💬 Social & Sharing</div>
+          <div class="section-sub">Compliments, prompts, emojis and gamertags ready to copy.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <!-- Random Compliment -->
+        <div class="card">
+          <div class="card-title">
+            <span>🌟 Compliment Generator</span><span class="tag">Nice</span>
+          </div>
+          <p class="card-sub">Get a wholesome compliment to send someone.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('compliment')">Compliment</button>
+            <div class="game-output" id="complimentOutput"></div>
+          </div>
+        </div>
+        <!-- Fun Chat Prompts -->
+        <div class="card">
+          <div class="card-title">
+            <span>💡 Chat Prompts</span><span class="tag">Ideas</span>
+          </div>
+          <p class="card-sub">Random conversation starters and debate prompts.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('prompt')">New Prompt</button>
+            <div class="game-output" id="promptOutput"></div>
+          </div>
+        </div>
+        <!-- Emoji Sharing -->
+        <div class="card">
+          <div class="card-title">
+            <span>😀 Emoji Pack</span><span class="tag">Copy</span>
+          </div>
+          <p class="card-sub">Get a mini pack of emojis ready to paste.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('emojiPack')">Generate</button>
+            <div class="game-output" id="emojiPackOutput" onclick="copyFromElement('emojiPackOutput')"></div>
+            <div class="small-text">Tap the emojis to copy to clipboard.</div>
+          </div>
+        </div>
+        <!-- Gamertag Sharing -->
+        <div class="card">
+          <div class="card-title">
+            <span>🏷️ Gamertag Sharing</span><span class="tag">Copy</span>
+          </div>
+          <p class="card-sub">Get a fresh gamertag and copy it instantly.</p>
+          <div class="game-area">
+            <button class="btn small" onclick="generateFrom('nickShare')">New Tag</button>
+            <div class="game-output" id="nickShareOutput" onclick="copyFromElement('nickShareOutput')"></div>
+            <div class="small-text">Tap the tag to copy to clipboard.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS & ANALYTICS -->
+    <section id="stats" class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">📊 Fake Analytics</div>
+          <div class="section-sub">Totally serious, not fake at all Ramesh metrics dashboard.</div>
+        </div>
+        <button class="btn small" onclick="switchSection('hub')">← Back to Hub</button>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">
+            <span>🎮 Games Played</span><span class="tag">Counter</span>
+          </div>
+          <p class="card-sub">Every time you start a game, this number rises.</p>
+          <div class="game-area">
+            <div class="section-sub">Total games started: <span id="gamesPlayed">0</span></div>
+            <div class="progress-bar">
+              <div id="gamesProgress" class="progress-fill"></div>
+            </div>
+            <div class="small-text">Play more games to fill the bar and unlock hidden labels.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>👥 Fake Online Users</span><span class="tag">Live</span>
+          </div>
+          <p class="card-sub">Random number that wiggles every few seconds.</p>
+          <div class="game-area">
+            <div class="section-sub">Currently online: <span id="fakeUsers">42</span></div>
+            <div class="small-text">Peak today: <span id="fakePeak">0</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🎭 AI Mood Meter</span><span class="tag">Overall</span>
+          </div>
+          <p class="card-sub">A global mood bar based on recent generator rolls.</p>
+          <div class="game-area">
+            <div class="progress-bar">
+              <div id="moodMeter" class="progress-fill" style="width:50%;"></div>
+            </div>
+            <div class="small-text">Current mood: <span id="moodLabel">Neutral 🤨</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <span>🏆 Achievements</span><span class="tag">Fun</span>
+          </div>
+          <p class="card-sub">Unlock silly badges by doing random things.</p>
+          <div class="game-area">
+            <ul id="achievementsList" class="small-text" style="padding-left:14px;"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="stats-strip">
+        <span class="chip">Mini stats strip: Games Played • Fake Users • Mood is also visible on HUB.</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Made with 💡 & 🤖 by Ramesh Enterprises
+  </footer>
 </div>
-
-<!-- CATEGORY SECTIONS -->
-<div id="cat1" class="section">
-<h2>🏢 Business & Creativity</h2>
-<input id="bizInput" placeholder="Type of business">
-<button onclick="genBusiness(this)">Generate Business Name</button>
-<div class="output" id="bizOut"></div>
-<button onclick="genSlogan(this)">Generate Slogan</button>
-<div class="output" id="sloganOut"></div>
-<button onclick="genIdea(this)">Generate Startup Idea</button>
-<div class="output" id="ideaOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat2" class="section">
-<h2>🎨 Fun & Random</h2>
-<button onclick="genExcuse(this)">Generate Excuse</button>
-<div class="output" id="excuseOut"></div>
-<button onclick="genJoke(this)">Generate Joke</button>
-<div class="output" id="jokeOut"></div>
-<button onclick="genMood(this)">Random Mood/Personality</button>
-<div class="output" id="moodOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat3" class="section">
-<h2>🧩 Emoji & Riddle</h2>
-<button onclick="genEmoji(this)">Random Emojis</button>
-<div class="output" id="emojiOut"></div>
-<button onclick="genRiddle(this)">Random Riddle</button>
-<div class="output" id="riddleOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat4" class="section">
-<h2>🎮 Quick Games</h2>
-<button onclick="openMiniGame('guess')">🎲 Guess the Number</button>
-<button onclick="openMiniGame('dice')">🎲 Dice Roller</button>
-<button onclick="openMiniGame('rps')">✊✋✌ Rock Paper Scissors</button>
-<div id="gameArea"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat5" class="section">
-<h2>🖱 Skill Games</h2>
-<button onclick="openMiniGame('click')">Click Speed Test</button>
-<button onclick="openMiniGame('typing')">Typing Speed Test</button>
-<button onclick="openMiniGame('memory')">Memory Card Game</button>
-<div id="gameArea2"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat6" class="section">
-<h2>❓ Trivia & Knowledge</h2>
-<button onclick="triviaGen(this)">Random Trivia Question</button>
-<div class="output" id="triviaOut"></div>
-<button onclick="funFacts(this)">Random Fun Fact</button>
-<div class="output" id="factOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat7" class="section">
-<h2>⏱ Clicker & Idle Games</h2>
-<button onclick="openMiniGame('clicker')">Clicker Game</button>
-<button onclick="openMiniGame('idle')">Idle Fun Game</button>
-<div id="clickerArea"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat8" class="section">
-<h2>📊 Analytics & Stats</h2>
-<button onclick="showAnalytics(this)">Show Stats</button>
-<div class="output" id="analyticsOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat9" class="section">
-<h2>⚙ Customization</h2>
-<button onclick="toggleMode()">Toggle Dark/Light</button>
-<button onclick="toggleRetro()">Toggle Retro</button>
-<select id="colorSelect" onchange="changeAccent(this.value)">
-<option value="#00d4ff">Blue</option>
-<option value="#ff00d4">Pink</option>
-<option value="#00ff49">Green</option>
-<option value="#ffd400">Yellow</option>
-</select>
-<select id="fontSelect" onchange="changeFont(this.value)">
-<option value="Arial">Arial</option>
-<option value="Courier New">Courier New</option>
-<option value="Comic Sans MS">Comic Sans</option>
-</select>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat10" class="section">
-<h2>🥚 Easter Eggs & Secrets</h2>
-<p>Click the title 7 times to unlock Secret Ultra AI Mode!</p>
-<button onclick="secretEgg(this)">Unlock Secret</button>
-<div class="output" id="eggOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat11" class="section">
-<h2>💬 Social & Sharing Fun</h2>
-<button onclick="genNickname(this)">Random Nickname</button>
-<div class="output" id="nickOut"></div>
-<button onclick="genGamertag(this)">Random Gamertag</button>
-<div class="output" id="gameTagOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat12" class="section">
-<h2>🧠 Learning & Challenge</h2>
-<button onclick="typingChallenge(this)">Typing Challenge</button>
-<div class="output" id="typeOut"></div>
-<button onclick="mathPuzzle(this)">Math Puzzle</button>
-<div class="output" id="puzzleOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat13" class="section">
-<h2>🤖 AI Fun Tools</h2>
-<button onclick="aiAdvice(this)">AI Advice Generator</button>
-<div class="output" id="aiOut"></div>
-<button onclick="aiFortune(this)">AI Fortune Teller</button>
-<div class="output" id="fortuneOut"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat14" class="section">
-<h2>✨ Visual Fun & Animations</h2>
-<button onclick="spark(document.body)">Trigger Confetti</button>
-<button onclick="bgStars()">Floating Stars</button>
-<button onclick="bgEmojis()">Floating Emojis</button>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<div id="cat15" class="section">
-<h2>🗂 Hub & Navigation</h2>
-<p>All tools are here in categories. Use search or click any category!</p>
-<input placeholder="Search tools..." id="searchHub" oninput="searchTools(this.value)">
-<div id="searchResults" class="grid"></div>
-<button onclick="goBack()">⬅ Back</button>
-</div>
-
-<footer>Made with 💡 & 🤖 by Ramesh Enterprises</footer>
 
 <script>
-// Visitors
-let v = localStorage.getItem("visits")||0; v++; localStorage.setItem("visits",v);
-document.getElementById("visits").innerText=v;
+/* ========= GLOBAL STATE & HELPERS ========= */
+let currentSection='hub';
+let gamesPlayed=0;
+let achievements=new Set();
+let fakeUsers=42;
+let fakePeak=0;
+let moodMeterValue=50;
+let cursorTrailEnabled=true;
+let cursorEmoji='✨';
+const emojiTrail=document.getElementById('emojiTrail');
+let lastMouse={x:0,y:0};
 
-// Modes
-function toggleMode(){document.body.classList.toggle("light");}
-function toggleRetro(){document.body.classList.toggle("retro");}
-function changeAccent(c){document.documentElement.style.setProperty('--accent',c);}
-function changeFont(f){document.body.style.fontFamily=f;}
+function switchSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const target=document.getElementById(id);
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.nav-links button').forEach(btn=>{
+    btn.classList.toggle('active',btn.getAttribute('data-target')===id);
+  });
+  currentSection=id;
+}
+document.querySelectorAll('.nav-links button').forEach(btn=>{
+  btn.addEventListener('click',()=>switchSection(btn.getAttribute('data-target')));
+});
 
-// Navigation
-function hideAll(){document.querySelectorAll(".section").forEach(s=>s.style.display="none");}
-function openTool(id){hideAll(); hub.style.display="none"; document.getElementById(id).style.display="block";}
-function goBack(){hideAll(); hub.style.display="grid";}
+document.addEventListener('mousemove',e=>{
+  lastMouse.x=e.clientX;
+  lastMouse.y=e.clientY;
+  if(cursorTrailEnabled){
+    emojiTrail.style.left=e.clientX+10+'px';
+    emojiTrail.style.top=e.clientY+10+'px';
+  }
+});
 
-// Confetti
-const canvas=document.getElementById("confetti"); const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth; canvas.height=window.innerHeight;
-let confettis=[];
-function createConfetti(x,y){
-  for(let i=0;i<30;i++){
-    confettis.push({x:x,y:y,r:Math.random()*6+2,dx:(Math.random()-0.5)*6,dy:(Math.random()-2)*-4,color:`hsl(${Math.random()*360},100%,50%)`});
+function setCursorEmoji(e){
+  cursorEmoji=e;
+  emojiTrail.textContent=cursorEmoji;
+}
+function toggleCursorTrail(on){
+  cursorTrailEnabled=on;
+  emojiTrail.style.display=on?'block':'none';
+}
+setCursorEmoji('✨');
+toggleCursorTrail(true);
+
+/* Fake users wiggle */
+function wiggleUsers(){
+  let delta=Math.floor(Math.random()*7)-3;
+  fakeUsers=Math.max(5,fakeUsers+delta);
+  if(fakeUsers>fakePeak)fakePeak=fakeUsers;
+  document.getElementById('fakeUsers').textContent=fakeUsers;
+  document.getElementById('fakePeak').textContent=fakePeak;
+}
+setInterval(wiggleUsers,3000);
+
+/* Games played & achievements */
+function markGamePlayed(){
+  gamesPlayed++;
+  document.getElementById('gamesPlayed').textContent=gamesPlayed;
+  const percent=Math.min(100,gamesPlayed*5);
+  document.getElementById('gamesProgress').style.width=percent+'%';
+  if(gamesPlayed===1)unlockAchievement('First Game Played');
+  if(gamesPlayed===10)unlockAchievement('Double Digit Gamer');
+  if(gamesPlayed===20)unlockAchievement('Arcade Addict');
+}
+function unlockAchievement(name){
+  if(achievements.has(name))return;
+  achievements.add(name);
+  const li=document.createElement('li');
+  li.textContent='🏆 '+name;
+  document.getElementById('achievementsList').appendChild(li);
+}
+
+/* Mood meter */
+function nudgeMood(delta,label){
+  moodMeterValue=Math.max(0,Math.min(100,moodMeterValue+delta));
+  document.getElementById('moodMeter').style.width=moodMeterValue+'%';
+  if(label)document.getElementById('moodLabel').textContent=label;
+}
+
+/* ========= GAMES ========= */
+
+/* Guess the Number + Levels */
+let guessNumber=0;
+let guessTriesLeft=0;
+function startGuessGame(){
+  const level=document.getElementById('guessLevel').value;
+  let max=50;let tries=10;
+  if(level==='medium'){max=100;tries=8;}
+  if(level==='hard'){max=500;tries=10;}
+  guessNumber=Math.floor(Math.random()*max)+1;
+  guessTriesLeft=tries;
+  document.getElementById('guessTries').textContent=guessTriesLeft;
+  document.getElementById('guessOutput').textContent='New number chosen between 1 and '+max+'.';
+  markGamePlayed();
+}
+function submitGuess(){
+  if(!guessNumber){document.getElementById('guessOutput').textContent='Click New first.';return;}
+  const val=parseInt(document.getElementById('guessInput').value,10);
+  if(isNaN(val)){document.getElementById('guessOutput').textContent='Enter a number.';return;}
+  guessTriesLeft--;
+  document.getElementById('guessTries').textContent=guessTriesLeft;
+  if(val===guessNumber){
+    document.getElementById('guessOutput').textContent='Correct! The number was '+guessNumber+'.';
+    unlockAchievement('Mind Reader');
+    guessNumber=0;
+  }else if(guessTriesLeft<=0){
+    document.getElementById('guessOutput').textContent='Out of tries! It was '+guessNumber+'.';
+    guessNumber=0;
+  }else{
+    const diff=Math.abs(val-guessNumber);
+    let hint='Cold.';
+    if(diff<=5)hint='Burning hot!';
+    else if(diff<=10)hint='Very hot.';
+    else if(diff<=20)hint='Warm.';
+    else if(diff<=40)hint='Cool.';
+    const highLow=val>guessNumber?'Too high. ':'Too low. ';
+    document.getElementById('guessOutput').textContent=highLow+hint+' Tries left: '+guessTriesLeft+'.';
   }
 }
-function drawConfetti(){ctx.clearRect(0,0,canvas.width,canvas.height); confettis.forEach((c,i)=>{ctx.fillStyle=c.color; ctx.beginPath(); ctx.arc(c.x,c.y,c.r,0,Math.PI*2); ctx.fill(); c.x+=c.dx;c.y+=c.dy;c.dy+=0.1;if(c.y>canvas.height){confettis.splice(i,1);}}); requestAnimationFrame(drawConfetti);}
-drawConfetti();
-function spark(btn){if(btn){const rect=btn.getBoundingClientRect(); createConfetti(rect.left+rect.width/2,rect.top+rect.height/2);}}
 
-// Generators
-function think(cb,btn){if(btn)spark(btn); setTimeout(cb,400);}
-function genBusiness(btn){think(()=>{let a=["Ramesh Enterprises","Ramesh Labs","NextGen Ramesh","Smart Ramesh","Ramesh Global","Ramesh Tech","Ramesh Innovations","Ramesh Solutions"]; let b=bizInput.value||"Business"; bizOut.innerText=a[Math.floor(Math.random()*a.length)]+" – "+b;},btn);}
-function genSlogan(btn){think(()=>{let a=["Built the Ramesh way","Quality you can trust","Big ideas, honest work","Innovation starts here","Ramesh delivers","Think Ramesh, Think Success","Powered by Ramesh"]; sloganOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
-function genIdea(btn){think(()=>{let a=["Fun AI hub","Games + tools website","Random generator lab","Hidden Easter egg site","Emoji generator fun","Mini quiz hub","Retro terminal interface"]; ideaOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
-function genExcuse(btn){think(()=>{let a=["AI went for chai ☕","Server felt lazy","Internet blinked","System needs motivation","Keyboard is sleeping","Laptop needed a break"]; excuseOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
-function genJoke(btn){think(()=>{let a=["Why did the AI cross the road? To reach the cloud!","I told my computer I needed a break—it froze!","Ramesh AI says: Laugh more!","Debugging is like being a detective"]; jokeOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
-function genMood(btn){think(()=>{let a=["Happy","Excited","Sleepy","Curious","Playful","Confused","Energetic"]; moodOut.innerText=a[Math.floor(Math.random()*a.length)];},btn);}
-function genEmoji(btn){think(()=>{let emojis=["😎","🤖","🎉","💡","🚀","😂","🔥","🧩","🎨","🕹️","⚡","🥳"]; let out=""; for(let i=0;i<6;i++){out+=emojis[Math.floor(Math.random()*emojis.length)]+" ";} emojiOut.innerText=out;},btn);}
-function genRiddle(btn){think(()=>{let riddles=[["What has keys but can't open locks?","A piano"],["What runs but never walks?","A river"],["I speak without a mouth and hear without ears. What am I?","An echo"],["What has hands but can’t clap?","A clock"]]; let r=riddles[Math.floor(Math.random()*riddles.length)]; riddleOut.innerText=r[0]+" (Answer: "+r[1]+")";},btn);}
-
-// Mini Games
-function openMiniGame(game){let area=gameArea; if(document.getElementById("gameArea2") && (game=="click"||game=="typing"||game=="memory")) area=document.getElementById("gameArea2"); if(game=="clicker"||game=="idle") area=document.getElementById("clickerArea"); area.innerHTML="Loading..."; setTimeout(()=>{area.innerHTML="<p>Game "+game+" loaded! (Interactive content can be added here)</p>";},300); spark(area);}
-
-// Analytics
-function showAnalytics(btn){if(btn)spark(btn); let out=document.getElementById("analyticsOut"); out.innerText="AI Accuracy: "+(50+Math.floor(Math.random()*51))+"%\nUsers Online: "+(1+Math.floor(Math.random()*2000))+"\nBusiness Tool used: "+(Math.floor(Math.random()*100))+" times\nGames played: "+(Math.floor(Math.random()*50))+" times\nServer Status: "+["Online","Busy","Offline","Updating"][Math.floor(Math.random()*4)];}
-
-// Trivia / Fun Facts
-function triviaGen(btn){if(btn)spark(btn); let q=["What is 2+2?","Capital of France?","Largest ocean?","Who invented light bulb?"]; let a=["4","Paris","Pacific","Thomas Edison"]; triviaOut.innerText=q[Math.floor(Math.random()*q.length)];}
-function funFacts(btn){if(btn)spark(btn); let facts=["Honey never spoils.","Bananas are berries.","Sharks existed before trees.","Octopus has three hearts."]; factOut.innerText=facts[Math.floor(Math.random()*facts.length)];}
-
-// Easter Eggs
-let clicks=0; title.onclick=()=>{clicks++; if(clicks==7){openTool("cat10"); createConfetti(window.innerWidth/2,100); clicks=0;}};
-function secretEgg(btn){spark(btn); eggOut.innerText="🎉 Secret Ultra Mode Unlocked!"}
-
-// Social / Nicknames
-function genNickname(btn){if(btn)spark(btn); let names=["Rameshinator","MegaRamesh","AI_Pro","FunMaster","EmojiWizard"]; nickOut.innerText=names[Math.floor(Math.random()*names.length)];}
-function genGamertag(btn){if(btn)spark(btn); let names=["RameshX","Enterpriser","FunBot","MegaHub","AI_Star"]; gameTagOut.innerText=names[Math.floor(Math.random()*names.length)];}
-
-// Learning / Challenge
-function typingChallenge(btn){if(btn)spark(btn); typeOut.innerText="Type 'Ramesh Enterprises' as fast as you can!";}
-function mathPuzzle(btn){if(btn)spark(btn); puzzleOut.innerText="Solve: 12 + 15 = ?";}
-
-// AI Fun
-function aiAdvice(btn){if(btn)spark(btn); let a=["Take a break","Code more","Think outside the box","Smile today!"]; aiOut.innerText=a[Math.floor(Math.random()*a.length)];}
-function aiFortune(btn){if(btn)spark(btn); let f=["You will create something amazing!","Fun is coming your way!","AI predicts: Confetti!","Adventure awaits!"]; fortuneOut.innerText=f[Math.floor(Math.random()*f.length)];}
-
-// Visual fun
-function bgStars(){document.body.style.background="radial-gradient(circle,#000,#111)";}
-function bgEmojis(){document.body.style.background="radial-gradient(circle,#111,#222)";}
-
-// Search
-function searchTools(q){
-  let res=document.getElementById("searchResults"); res.innerHTML="";
-  if(!q) return;
-  let tools=["Business Name","Slogan","Startup Idea","Excuse","Joke","Random Mood","Emoji Generator","Riddle","Guess Number","Dice Roller","Rock Paper Scissors","Click Speed","Typing Speed","Memory Game","Trivia","Fun Fact","Clicker Game","Idle Game","Nicknames","Gamertag","Typing Challenge","Math Puzzle","AI Advice","AI Fortune"];
-  tools.forEach(t=>{if(t.toLowerCase().includes(q.toLowerCase())){let b=document.createElement("button"); b.innerText=t; b.onclick=()=>alert("Tool: "+t); res.appendChild(b);}});
+/* Dice Roller */
+function rollDice(){
+  const count=parseInt(document.getElementById('diceCount').value,10);
+  const faces=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  let res='';let sum=0;
+  for(let i=0;i<count;i++){
+    const r=Math.floor(Math.random()*6);
+    res+=faces[r]+' ';
+    sum+=r+1;
+  }
+  document.getElementById('diceOutput').textContent=res+'Total: '+sum;
+  markGamePlayed();
 }
+
+/* RPS with fake AI */
+let lastPlayerMove=null;
+let rpsUser=0,rpsAi=0;
+function playRPS(move){
+  const options=['rock','paper','scissors'];
+  let aiMove;
+  if(lastPlayerMove){
+    if(lastPlayerMove==='rock')aiMove='paper';
+    else if(lastPlayerMove==='paper')aiMove='scissors';
+    else aiMove='rock';
+    if(Math.random()<0.4)aiMove=options[Math.floor(Math.random()*3)];
+  }else{
+    aiMove=options[Math.floor(Math.random()*3)];
+  }
+  lastPlayerMove=move;
+  const result=determineRPS(move,aiMove);
+  if(result==='win'){rpsUser++;nudgeMood(3,'Confident 😎');}
+  if(result==='lose'){rpsAi++;nudgeMood(-3,'Mocking 😏');}
+  let text='You chose '+move+', AI chose '+aiMove+'. ';
+  if(result==='win')text+='You win!';
+  else if(result==='lose')text+='AI wins!';
+  else text+='Draw.';
+  document.getElementById('rpsOutput').textContent=text;
+  document.getElementById('rpsUserScore').textContent=rpsUser;
+  document.getElementById('rpsAiScore').textContent=rpsAi;
+  markGamePlayed();
+}
+function determineRPS(p,a){
+  if(p===a)return'draw';
+  if((p==='rock'&&a==='scissors')||(p==='paper'&&a==='rock')||(p==='scissors'&&a==='paper'))return'win';
+  return'lose';
+}
+
+/* Click Speed Test */
+let clickTimer=null;
+let clickTimeLeft=5.00;
+let clickCount=0;
+function startClickTest(){
+  if(clickTimer)clearInterval(clickTimer);
+  clickTimeLeft=5.00;
+  clickCount=0;
+  document.getElementById('clickOutput').textContent='Start clicking!';
+  document.getElementById('clickTimer').textContent=clickTimeLeft.toFixed(2);
+  const btn=document.getElementById('clickButton');
+  btn.disabled=false;
+  clickTimer=setInterval(()=>{
+    clickTimeLeft-=0.05;
+    if(clickTimeLeft<=0){
+      clearInterval(clickTimer);
+      clickTimer=null;
+      btn.disabled=true;
+      const cps=clickCount/5;
+      let label='Turtle 🐢';
+      if(cps>4)label='Cat 🐱';
+      if(cps>6)label='Ninja 🥷';
+      if(cps>8)label='Hummingbird 🐦';
+      document.getElementById('clickOutput').textContent='Clicks: '+clickCount+' | CPS: '+cps.toFixed(2)+' | Rank: '+label;
+      unlockAchievement('Fast Fingers');
+    }
+    document.getElementById('clickTimer').textContent=Math.max(0,clickTimeLeft).toFixed(2);
+  },50);
+  markGamePlayed();
+}
+function registerClick(){
+  if(clickTimer)clickCount++;
+}
+
+/* Typing Speed Test */
+const typingPrompts=[
+  "Ramesh AI Fun Hub is secretly training my brain.",
+  "Mini games and generators make studying less boring.",
+  "Typing speed tests reveal how caffeine powered you are.",
+  "Grid mazes and memory games are low key addictive."
+];
+let typingStart=null;
+let currentTypingPrompt="";
+function newTypingPrompt(){
+  currentTypingPrompt=typingPrompts[Math.floor(Math.random()*typingPrompts.length)];
+  document.getElementById('typingPrompt').textContent=currentTypingPrompt;
+  document.getElementById('typingInput').value='';
+  document.getElementById('typingStats').textContent='';
+  typingStart=null;
+}
+function startTypingTest(){
+  if(!typingStart){
+    typingStart=performance.now();
+    markGamePlayed();
+  }
+}
+function resetTypingTest(){newTypingPrompt();}
+document.getElementById('typingInput').addEventListener('input',()=>{
+  if(!typingStart)return;
+  const input=document.getElementById('typingInput').value;
+  const now=performance.now();
+  const minutes=(now-typingStart)/60000;
+  const words=input.trim().split(/\s+/).filter(Boolean).length;
+  const wpm=minutes>0?words/minutes:0;
+  const target=currentTypingPrompt;
+  let correct=0;
+  for(let i=0;i<Math.min(input.length,target.length);i++){
+    if(input[i]===target[i])correct++;
+  }
+  const accuracy=target.length? (correct/target.length)*100:0;
+  document.getElementById('typingStats').textContent='WPM: '+wpm.toFixed(1)+' | Accuracy: '+accuracy.toFixed(1)+'%';
+});
+newTypingPrompt();
+
+/* Memory Card Matching */
+const memoryEmojis=['🍕','🚀','🎧','🐱','⚡','🌈','🎮','📚'];
+let memoryCards=[];
+let memoryFirst=null;
+let memoryLock=false;
+let memoryMoves=0;
+let memoryMatchCount=0;
+function initMemoryGame(){
+  memoryCards=[...memoryEmojis,...memoryEmojis].sort(()=>Math.random()-0.5);
+  const grid=document.getElementById('memoryGrid');
+  grid.innerHTML='';
+  memoryFirst=null;
+  memoryLock=false;
+  memoryMoves=0;
+  memoryMatchCount=0;
+  document.getElementById('memoryMoves').textContent='0';
+  document.getElementById('memoryMatches').textContent='0';
+  memoryCards.forEach((emoji,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='tile-btn';
+    btn.textContent='?';
+    btn.dataset.index=idx;
+    btn.onclick=()=>flipMemory(btn,idx);
+    grid.appendChild(btn);
+  });
+  markGamePlayed();
+}
+function flipMemory(btn,idx){
+  if(memoryLock||btn.classList.contains('matched'))return;
+  btn.textContent=memoryCards[idx];
+  if(!memoryFirst){
+    memoryFirst={btn,idx};
+  }else{
+    memoryMoves++;
+    document.getElementById('memoryMoves').textContent=memoryMoves;
+    if(memoryCards[idx]===memoryCards[memoryFirst.idx] && memoryFirst.idx!==idx){
+      btn.classList.add('matched');
+      memoryFirst.btn.classList.add('matched');
+      memoryMatchCount++;
+      document.getElementById('memoryMatches').textContent=memoryMatchCount;
+      memoryFirst=null;
+      if(memoryMatchCount===memoryEmojis.length)unlockAchievement('Memory Master');
+    }else{
+      memoryLock=true;
+      setTimeout(()=>{
+        btn.textContent='?';
+        memoryFirst.btn.textContent='?';
+        memoryFirst=null;
+        memoryLock=false;
+      },600);
+    }
+  }
+}
+initMemoryGame();
+
+/* Hangman */
+const hangmanWords=['javascript','ramesh','galaxy','notebook','puzzle','typing','science','history','kitchen','library','planet'];
+let hangmanWord='';
+let hangmanDisplay=[];
+let hangmanLives=0;
+let hangmanUsed=new Set();
+function initHangman(){
+  hangmanWord=hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
+  hangmanDisplay=Array(hangmanWord.length).fill('_');
+  hangmanLives=7;
+  hangmanUsed.clear();
+  document.getElementById('hangmanWord').textContent=hangmanDisplay.join(' ');
+  document.getElementById('hangmanLives').textContent=hangmanLives;
+  document.getElementById('hangmanUsed').textContent='';
+  markGamePlayed();
+}
+function guessHangman(){
+  if(!hangmanWord){initHangman();return;}
+  const input=document.getElementById('hangmanLetter');
+  const letter=(input.value||'').toLowerCase();
+  input.value='';
+  if(!letter||hangmanUsed.has(letter))return;
+  hangmanUsed.add(letter);
+  document.getElementById('hangmanUsed').textContent=[...hangmanUsed].join(', ');
+  if(hangmanWord.includes(letter)){
+    for(let i=0;i<hangmanWord.length;i++){
+      if(hangmanWord[i]===letter)hangmanDisplay[i]=letter;
+    }
+    document.getElementById('hangmanWord').textContent=hangmanDisplay.join(' ');
+    if(!hangmanDisplay.includes('_')){
+      document.getElementById('hangmanLives').textContent='✔';
+      unlockAchievement('Word Slayer');
+      hangmanWord='';
+    }
+  }else{
+    hangmanLives--;
+    if(hangmanLives<=0){
+      document.getElementById('hangmanLives').textContent='0 (Was '+hangmanWord+')';
+      hangmanWord='';
+    }else{
+      document.getElementById('hangmanLives').textContent=hangmanLives;
+    }
+  }
+}
+initHangman();
+
+/* Word Scramble */
+let scrambleWord='';
+function initScramble(){
+  scrambleWord=hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
+  const scrambled=scrambleWord.split('').sort(()=>Math.random()-0.5).join('');
+  document.getElementById('scrambleWord').textContent=scrambled;
+  document.getElementById('scrambleOutput').textContent='';
+  document.getElementById('scrambleGuess').value='';
+  markGamePlayed();
+}
+function submitScramble(){
+  const guess=document.getElementById('scrambleGuess').value.toLowerCase().trim();
+  if(!scrambleWord)return;
+  if(guess===scrambleWord){
+    document.getElementById('scrambleOutput').textContent='Correct! '+scrambleWord;
+    unlockAchievement('Unscrambler');
+  }else{
+    document.getElementById('scrambleOutput').textContent='Nope, try again.';
+  }
+}
+initScramble();
+
+/* Puzzle Slider 15 */
+let sliderTiles=[];
+let sliderMoves=0;
+function initSlider(){
+  sliderTiles=[...Array(15).keys()].map(x=>x+1);
+  sliderTiles.push(null);
+  for(let i=0;i<200;i++)slideRandom();
+  renderSlider();
+  sliderMoves=0;
+  document.getElementById('sliderMoves').textContent='0';
+  markGamePlayed();
+}
+function slideRandom(){
+  const emptyIndex=sliderTiles.indexOf(null);
+  const neighbors=[];
+  if(emptyIndex%4!==0)neighbors.push(emptyIndex-1);
+  if(emptyIndex%4!==3)neighbors.push(emptyIndex+1);
+  if(emptyIndex>3)neighbors.push(emptyIndex-4);
+  if(emptyIndex<12)neighbors.push(emptyIndex+4);
+  const swapIndex=neighbors[Math.floor(Math.random()*neighbors.length)];
+  [sliderTiles[emptyIndex],sliderTiles[swapIndex]]=[sliderTiles[swapIndex],sliderTiles[emptyIndex]];
+}
+function renderSlider(){
+  const grid=document.getElementById('sliderGrid');
+  grid.innerHTML='';
+  sliderTiles.forEach((val,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='tile-btn'+(val===null?' empty':'');
+    btn.textContent=val===null?'':val;
+    btn.onclick=()=>clickSlider(idx);
+    grid.appendChild(btn);
+  });
+}
+function clickSlider(index){
+  const emptyIndex=sliderTiles.indexOf(null);
+  const valid=[emptyIndex-1,emptyIndex+1,emptyIndex-4,emptyIndex+4];
+  if(!valid.includes(index))return;
+  [sliderTiles[emptyIndex],sliderTiles[index]]=[sliderTiles[index],sliderTiles[emptyIndex]];
+  sliderMoves++;
+  document.getElementById('sliderMoves').textContent=sliderMoves;
+  renderSlider();
+  if(isSliderSolved()){
+    unlockAchievement('Puzzle Master');
+  }
+}
+function isSliderSolved(){
+  for(let i=0;i<15;i++){
+    if(sliderTiles[i]!==i+1)return false;
+  }
+  return sliderTiles[15]===null;
+}
+initSlider();
+
+/* Trivia Quiz */
+const trivia=[
+  {q:'Capital of India?',opts:['Mumbai','Delhi','Kolkata','Chennai'],a:1},
+  {q:'2 + 2 × 3 = ?',opts:['10','12','8','6'],a:0},
+  {q:'Planet known as the Red Planet?',opts:['Venus','Mars','Jupiter','Mercury'],a:1},
+  {q:'Which language runs in a browser?',opts:['Python','C++','JavaScript','Java'],a:2},
+  {q:'H2O is?',opts:['Oxygen','Hydrogen','Water','Helium'],a:2}
+];
+let triviaIndex=0,triviaScore=0,triviaAnswered=0;
+function renderTrivia(){
+  const t=trivia[triviaIndex];
+  document.getElementById('triviaQuestion').textContent=t.q;
+  const wrap=document.getElementById('triviaOptions');
+  wrap.innerHTML='';
+  t.opts.forEach((o,i)=>{
+    const div=document.createElement('div');
+    div.className='quiz-option';
+    div.textContent=o;
+    div.onclick=()=>selectTrivia(i);
+    wrap.appendChild(div);
+  });
+  document.getElementById('triviaTotal').textContent=trivia.length;
+  document.getElementById('triviaScore').textContent=triviaScore;
+}
+function selectTrivia(i){
+  const t=trivia[triviaIndex];
+  const opts=[...document.querySelectorAll('#triviaOptions .quiz-option')];
+  opts.forEach((el,idx)=>{
+    if(idx===t.a)el.classList.add('correct');
+    else if(idx===i)el.classList.add('wrong');
+    el.style.pointerEvents='none';
+  });
+  if(i===t.a){
+    triviaScore++;
+    nudgeMood(2,'Smug 😎');
+  }else{
+    nudgeMood(-1,'Confused 😵');
+  }
+  triviaAnswered++;
+  document.getElementById('triviaScore').textContent=triviaScore;
+  markGamePlayed();
+}
+function nextTrivia(){
+  triviaIndex=(triviaIndex+1)%trivia.length;
+  renderTrivia();
+}
+renderTrivia();
+
+/* Flashcards */
+const flashcards=[
+  {front:'Ephemeral',back:'Lasting for a very short time'},
+  {front:'Aesthetic',back:'Concerned with beauty or the appreciation of beauty'},
+  {front:'Algorithm',back:'A step-by-step procedure to solve a problem'},
+  {front:'Oxymoron',back:'A combination of contradictory words'}
+];
+let flashIndex=0;
+let flashFront=true;
+function renderFlashcard(){
+  const card=document.getElementById('flashcard');
+  const obj=flashcards[flashIndex];
+  card.textContent=flashFront?obj.front:obj.back;
+}
+function flipFlashcard(){flashFront=!flashFront;renderFlashcard();}
+function nextFlashcard(){flashIndex=(flashIndex+1)%flashcards.length;flashFront=true;renderFlashcard();markGamePlayed();}
+renderFlashcard();
+
+/* Name That Tune (emoji hints) */
+const tunes=[
+  {emoji:'🎄🎶',answer:'jingle bells'},
+  {emoji:'🕺🎵',answer:'dance song'},
+  {emoji:'🧊❄️🎤',answer:'let it go'},
+  {emoji:'🔥🎸',answer:'rock anthem'},
+  {emoji:'🌧️😭🎶',answer:'sad song'}
+];
+let tuneIndex=0;
+function nextTune(){
+  tuneIndex=Math.floor(Math.random()*tunes.length);
+  document.getElementById('tuneEmoji').textContent=tunes[tuneIndex].emoji;
+  document.getElementById('tuneGuess').value='';
+  document.getElementById('tuneOutput').textContent='';
+  markGamePlayed();
+}
+function submitTune(){
+  const guess=document.getElementById('tuneGuess').value.toLowerCase().trim();
+  if(!tunes[tuneIndex])return;
+  if(guess===tunes[tuneIndex].answer){
+    document.getElementById('tuneOutput').textContent='Correct!';
+  }else{
+    document.getElementById('tuneOutput').textContent='Hint: '+tunes[tuneIndex].answer[0].toUpperCase()+'...';
+  }
+}
+nextTune();
+
+/* Idle / Clicker */
+let idleCoins=0;
+let idleAutoRate=0;
+function clickIdle(){
+  idleCoins++;
+  updateIdle();
+  markGamePlayed();
+}
+function buyIdleUpgrade(amount,cost,level){
+  if(idleCoins<cost){
+    document.getElementById('idleOutput').textContent='Need '+(cost-idleCoins)+' more coins.';
+    return;
+  }
+  idleCoins-=cost;
+  idleAutoRate+=amount;
+  document.getElementById('idleOutput').textContent='Bought upgrade level '+level+' (+ '+amount+'/s).';
+  updateIdle();
+  unlockAchievement('Idle Engineer');
+}
+function updateIdle(){
+  document.getElementById('idleCoins').textContent=idleCoins;
+  document.getElementById('idleAuto').textContent=idleAutoRate;
+}
+setInterval(()=>{
+  if(idleAutoRate>0){
+    idleCoins+=idleAutoRate;
+    updateIdle();
+  }
+},1000);
+
+/* Maze Game */
+const mazeLayout=[
+  'S....#.',
+  '.##.#..',
+  '.#..#..',
+  '.#..##.',
+  '.#.....',
+  '.##.##.',
+  '...#..E'
+];
+let mazePlayer={x:0,y:0};
+function initMaze(){
+  mazePlayer={x:0,y:0};
+  renderMaze();
+  document.getElementById('mazeOutput').textContent='Reach the orange goal.';
+  markGamePlayed();
+}
+function renderMaze(){
+  const grid=document.getElementById('mazeGrid');
+  grid.innerHTML='';
+  for(let y=0;y<mazeLayout.length;y++){
+    for(let x=0;x<mazeLayout[y].length;x++){
+      const cell=document.createElement('div');
+      const ch=mazeLayout[y][x];
+      cell.className='maze-cell ';
+      if(ch==='#')cell.classList.add('maze-wall');
+      else cell.classList.add('maze-path');
+      if(ch==='S')cell.classList.add('maze-start');
+      if(ch==='E')cell.classList.add('maze-end');
+      if(mazePlayer.x===x&&mazePlayer.y===y)cell.classList.add('maze-player');
+      grid.appendChild(cell);
+    }
+  }
+}
+function moveMaze(dir){
+  let {x,y}=mazePlayer;
+  if(dir==='up')y--;
+  if(dir==='down')y++;
+  if(dir==='left')x--;
+  if(dir==='right')x++;
+  if(y<0||y>=mazeLayout.length||x<0||x>=mazeLayout[0].length)return;
+  if(mazeLayout[y][x]==='#')return;
+  mazePlayer={x,y};
+  renderMaze();
+  if(mazeLayout[y][x]==='E'){
+    document.getElementById('mazeOutput').textContent='You escaped the maze!';
+    unlockAchievement('Maze Runner');
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(currentSection!=='games')return;
+  const map={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+  if(map[e.key]){e.preventDefault();moveMaze(map[e.key]);}
+});
+initMaze();
+
+/* ========= GENERATORS ========= */
+const generatorData={
+  business:[
+    "Quantum Dosa Labs",
+    "Pixel Chai Studios",
+    "Neon Rickshaw Tech",
+    "Midnight Byte Bakery",
+    "Masala Cloud Systems",
+    "Ramesh Rocket Works",
+    "Glitch Lassi Ventures"
+  ],
+  slogan:[
+    "Lag less. Laugh more.",
+    "Turning homework panic into boss mode.",
+    "Powered by chai, code, and chaos.",
+    "Small screen, big brain.",
+    "If it loads, it explodes with fun."
+  ],
+  nick:[
+    "R4M3SH_X",
+    "NeonNerd",
+    "ByteBandit",
+    "CosmicNoob",
+    "LagLegend",
+    "SilentGlitch",
+    "QuantumRider"
+  ],
+  joke:[
+    "Why did the function break up? It had too many arguments.",
+    "I would tell you a UDP joke, but you might not get it.",
+    "Why was the math book sad? It had too many problems.",
+    "I told my computer I needed a break, it said: 'No, you need an update.'"
+  ],
+  story:[
+    "Ramesh accidentally built an AI that only plays games and refuses to do homework.",
+    "In a neon-lit city, a student launched a one-file website that secretly trained everyone’s brain.",
+    "The computer lab fell silent when the projector showed a maze game that nobody could beat."
+  ],
+  poem:[
+    "Lines of code and pixel light,\nTurn my screen to neon night.",
+    "Between the bugs and compiler screams,\nWe still chase impossible dreams.",
+    "Coffee is low, deadlines are near,\nYet somehow the brain stays in gear."
+  ],
+  challenge:[
+    "Write down three goals for today and actually do one.",
+    "Play any three games and beat your previous high score in at least one.",
+    "Explain a meme to a family member like a serious professor.",
+    "Study for ten minutes, then reward yourself with a game."
+  ],
+  excuse:[
+    "My Wi‑Fi tried to connect to another dimension.",
+    "My notes were auto-deleted by future me to avoid embarrassment.",
+    "I was busy debugging my life settings.",
+    "The dog didn’t eat my homework, but my laptop almost did."
+  ],
+  advice:[
+    "Break big tasks into ridiculously tiny steps so they stop feeling scary.",
+    "Use a timer: 20 minutes full focus, 5 minutes chaos. Repeat.",
+    "If future-you would thank you, just start now for five minutes.",
+    "Sleep is a performance booster, not a luxury."
+  ],
+  fortune:[
+    "Tomorrow, you will randomly understand a topic that confused you for weeks.",
+    "A new idea for a project will appear when you are about to sleep.",
+    "Your next test will include a question you secretly hoped for.",
+    "Someone will unexpectedly appreciate your work soon."
+  ],
+  emojiCombo:[
+    "🍕🚀🎧",
+    "📚🔥🧠",
+    "🎮⚡😴",
+    "🌈🤖✨",
+    "🧪🐱💻"
+  ],
+  fact:[
+    "Octopuses have three hearts and blue blood.",
+    "There are more possible chess games than atoms in the observable universe.",
+    "Bananas are berries, but strawberries are not.",
+    "The Eiffel Tower can be 15 cm taller during hot days.",
+    "Honey never spoils; it can last thousands of years."
+  ],
+  mood:[
+    "Hyper Focused ⚡",
+    "Sleepy but Trying 😴",
+    "Secretly Overpowered 🦸",
+    "Calm Chaos 🌊",
+    "Brain Buffering ⏳"
+  ],
+  compliment:[
+    "Your brain has main-character energy.",
+    "If effort was XP, you’d be level 99 already.",
+    "You make complicated things look easy.",
+    "Some future project will literally depend on you existing."
+  ],
+  prompt:[
+    "Would you rather have infinite knowledge or infinite time?",
+    "Is homework actually useful or just badly designed?",
+    "If AI graded exams, what would change first?",
+    "Describe your dream game in one paragraph."
+  ],
+  emojiPack:[
+    "🔥⚡🎮🚀",
+    "🤓📚🧠✨",
+    "😎🎧💻🌈",
+    "🥳🎉🍕🎂",
+    "🤖🧪🔬💡"
+  ],
+  nickShare:[
+    "RameshVortex",
+    "NeonScholar",
+    "BrainStormR",
+    "GlitchWizard",
+    "NoLagRamesh"
+  ]
+};
+function randomFrom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function generateFrom(key){
+  const outId=key+'Output';
+  const el=document.getElementById(outId);
+  if(!el)return;
+  if(key==='mood'){nudgeMood( (Math.random()>0.5?5:-5),'Random Mood 🎲');}
+  el.textContent=randomFrom(generatorData[key]);
+  markGamePlayed();
+}
+
+/* Password generator */
+function generatePassword(){
+  let length=parseInt(document.getElementById('passwordLength').value,10);
+  length=isNaN(length)?12:Math.max(6,Math.min(32,length));
+  const chars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
+  let pass='';
+  for(let i=0;i<length;i++){
+    pass+=chars[Math.floor(Math.random()*chars.length)];
+  }
+  const out=document.getElementById('passwordOutput');
+  out.textContent=pass;
+}
+
+/* Palette generator */
+function generatePalette(){
+  const container=document.getElementById('paletteOutput');
+  container.innerHTML='';
+  for(let i=0;i<5;i++){
+    const color='#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+    const sw=document.createElement('div');
+    sw.style.background=color;
+    sw.style.width='40px';
+    sw.style.height='40px';
+    sw.style.borderRadius='6px';
+    sw.style.cursor='pointer';
+    sw.title=color;
+    sw.onclick=()=>navigator.clipboard.writeText(color);
+    container.appendChild(sw);
+  }
+}
+
+/* ========= AI CHAT ========= */
+function chatAI(){
+  const msg=document.getElementById('aiMessage').value.trim();
+  if(!msg)return;
+  const personality=document.getElementById('aiPersonality').value;
+  const log=document.getElementById('aiChatLog');
+  const userLine='You: '+msg;
+  let reply='';
+  if(personality==='wise'){
+    reply="WiseAI: "+generateWiseReply(msg);
+  }else if(personality==='chaos'){
+    reply="ChaosAI: "+generateChaosReply(msg);
+  }else if(personality==='friendly'){
+    reply="BuddyAI: "+generateFriendlyReply(msg);
+  }else{
+    reply="BotAI: "+generateRobotReply(msg);
+  }
+  log.textContent+=userLine+"\n"+reply+"\n\n";
+  log.scrollTop=log.scrollHeight;
+  document.getElementById('aiMessage').value='';
+  markGamePlayed();
+}
+function generateWiseReply(msg){
+  return "Imagine yourself one year from now, glad you acted on this: \""+msg+"\".";
+}
+function generateChaosReply(msg){
+  return "Plot twist: "+msg+" was secretly a tutorial level for your real life.";
+}
+function generateFriendlyReply(msg){
+  return "That actually makes sense. You’re handling \""+msg+"\" better than you think.";
+}
+function generateRobotReply(msg){
+  return "Input received: \""+msg+"\". Processing... Conclusion: you are 87% capable of solving this.";
+}
+
+/* Mood detector */
+function detectMood(){
+  const text=document.getElementById('moodText').value.toLowerCase();
+  let mood='Neutral 🤨';
+  let delta=0;
+  if(/happy|excited|great|amazing|good/.test(text)){mood='Positive 😄';delta=5;}
+  else if(/sad|tired|exhausted|bad|angry|upset/.test(text)){mood='Low 😓';delta=-5;}
+  else if(/bored|meh|ok|fine/.test(text)){mood='Meh 😐';delta=0;}
+  else{delta=1;}
+  nudgeMood(delta,mood);
+  document.getElementById('moodOutput').textContent='Guessed mood: '+mood;
+}
+
+/* ========= FUN & RANDOM: CONFETTI & PARTICLES ========= */
+function confetti(){
+  for(let i=0;i<25;i++){
+    createParticle(Math.random()*window.innerWidth,Math.random()*window.innerHeight);
+  }
+  unlockAchievement('Confetti Enjoyer');
+}
+function particleBurst(){
+  for(let i=0;i<18;i++){
+    createParticle(lastMouse.x,lastMouse.y);
+  }
+}
+function createParticle(x,y){
+  const el=document.createElement('div');
+  el.textContent=randomFrom(['✨','⭐','💥','⚡','🔥']);
+  el.style.position='fixed';
+  el.style.left=x+'px';
+  el.style.top=y+'px';
+  el.style.pointerEvents='none';
+  el.style.zIndex=9998;
+  el.style.transition='transform 0.8s ease-out, opacity 0.8s ease-out';
+  document.body.appendChild(el);
+  const dx=(Math.random()-0.5)*160;
+  const dy=(Math.random()-0.5)*160;
+  requestAnimationFrame(()=>{
+    el.style.transform='translate('+dx+'px,'+dy+'px) scale(0.5)';
+    el.style.opacity='0';
+  });
+  setTimeout(()=>el.remove(),850);
+}
+
+/* Daily surprise */
+function dailySurprise(){
+  const dateKey=new Date().toDateString();
+  const messages=[
+    "Today is secretly a high‑potential day. Do one bold tiny thing.",
+    "If you read this, you just unlocked 0.5% extra luck.",
+    "Someone else is also procrastinating right now. Be the plot twist.",
+    "Your future self is cheering for you silently."
+  ];
+  const bonus=randomFrom(['+1 mood','+1 idea','+1 patience','+1 XP']);
+  document.getElementById('dailyOutput').textContent=dateKey+' — '+randomFrom(messages)+' Bonus: '+bonus+'.';
+}
+
+/* ========= CUSTOMIZATION ========= */
+function setTheme(mode){
+  let root=document.documentElement;
+  if(mode==='light'){
+    root.style.setProperty('--bg-current','linear-gradient(135deg,#fef3c7,#e5e7eb)');
+    root.style.setProperty('--text-main','#111827');
+    root.style.setProperty('--card-bg','rgba(255,255,255,0.9)');
+  }else if(mode==='dark'){
+    root.style.setProperty('--bg-current','var(--bg-gradient-dark)');
+    root.style.setProperty('--text-main','#e5e7eb');
+    root.style.setProperty('--card-bg','rgba(15,23,42,0.95)');
+  }else{
+    root.style.setProperty('--bg-current','var(--bg-gradient-neon)');
+    root.style.setProperty('--text-main','#f9fafb');
+    root.style.setProperty('--card-bg','rgba(15,23,42,0.9)');
+  }
+}
+function toggleRetro(){
+  const body=document.body;
+  const retro=body.classList.toggle('retro-mode');
+  if(retro){
+    document.documentElement.style.setProperty('--font-main',getComputedStyle(document.documentElement).getPropertyValue('--font-pixel'));
+  }else{
+    document.documentElement.style.setProperty('--font-main','system-ui');
+  }
+}
+function changeAccent(color){
+  document.documentElement.style.setProperty('--accent',color);
+}
+function setFont(type){
+  if(type==='clean'){
+    document.documentElement.style.setProperty('--font-main','system-ui,sans-serif');
+  }else if(type==='pixel'){
+    document.documentElement.style.setProperty('--font-main','var(--font-pixel)');
+  }else{
+    document.documentElement.style.setProperty('--font-main','var(--font-fun)');
+  }
+}
+function setGradient(name){
+  let val;
+  if(name==='sunset')val='linear-gradient(135deg,#ff7eb3,#ff758c,#ffb347)';
+  else if(name==='ocean')val='linear-gradient(135deg,#1d4ed8,#22c55e,#0ea5e9)';
+  else if(name==='matrix')val='linear-gradient(135deg,#000000,#065f46,#059669)';
+  else val='linear-gradient(135deg,#ff00ff,#00f0ff,#ffea00)';
+  document.documentElement.style.setProperty('--bg-current',val);
+}
+
+/* ========= LEARNING ========= */
+
+/* Math puzzles */
+const mathPuzzles=[
+  {q:"7 + 8 × 2 = ?",a:23},
+  {q:"(12 − 5) × 3 = ?",a:21},
+  {q:"3² + 4² = ?",a:25},
+  {q:"If x = 5, 2x + 3 = ?",a:13},
+  {q:"Sequence: 2, 4, 8, 16, ?",a:32}
+];
+let mathIndex=0;
+function newMathPuzzle(){
+  mathIndex=Math.floor(Math.random()*mathPuzzles.length);
+  document.getElementById('mathPuzzle').textContent=mathPuzzles[mathIndex].q;
+  document.getElementById('mathAnswer').value='';
+  document.getElementById('mathOutput').textContent='';
+  markGamePlayed();
+}
+function submitMath(){
+  const val=parseInt(document.getElementById('mathAnswer').value,10);
+  if(isNaN(val))return;
+  if(val===mathPuzzles[mathIndex].a){
+    document.getElementById('mathOutput').textContent='Correct!';
+  }else{
+    document.getElementById('mathOutput').textContent='Nope. Correct: '+mathPuzzles[mathIndex].a;
+  }
+}
+newMathPuzzle();
+
+/* Logic puzzles */
+const logicData=[
+  {q:"If all cats are animals and some animals are blue, can some cats be blue?",opts:['Yes','No'],a:0},
+  {q:"You see a boat full of people. It has not sunk, but when you look again you don’t see a single person. Why?",opts:['They went underwater','They were all married'],a:1},
+  {q:"What gets wetter the more it dries?",opts:['Sponge','Towel'],a:1}
+];
+let logicIndex=0;
+function renderLogic(){
+  const obj=logicData[logicIndex];
+  document.getElementById('logicQuestion').textContent=obj.q;
+  const wrap=document.getElementById('logicOptions');
+  wrap.innerHTML='';
+  obj.opts.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='quiz-option';
+    div.textContent=t;
+    div.onclick=()=>{
+      if(i===obj.a){
+        div.classList.add('correct');
+      }else{
+        div.classList.add('wrong');
+      }
+      [...wrap.children].forEach(c=>c.style.pointerEvents='none');
+    };
+    wrap.appendChild(div);
+  });
+}
+function nextLogic(){
+  logicIndex=(logicIndex+1)%logicData.length;
+  renderLogic();
+  markGamePlayed();
+}
+renderLogic();
+
+/* Typing Race */
+const raceTexts=[
+  "Speed is nothing without accuracy in typing races.",
+  "The quickest way to finish is to avoid unnecessary mistakes.",
+  "Calm breathing can actually make you type faster."
+];
+let raceStart=null;
+let raceTarget="";
+const raceGhostWPM=45;
+function newRaceText(){
+  raceTarget=randomFrom(raceTexts);
+  document.getElementById('racePrompt').textContent=raceTarget;
+  document.getElementById('raceInput').value='';
+  document.getElementById('raceStats').textContent='';
+  raceStart=null;
+}
+function startRace(){
+  if(!raceStart){
+    raceStart=performance.now();
+    markGamePlayed();
+  }
+}
+document.getElementById('raceInput').addEventListener('input',()=>{
+  if(!raceStart)return;
+  const text=document.getElementById('raceInput').value;
+  const now=performance.now();
+  const minutes=(now-raceStart)/60000;
+  const words=text.trim().split(/\s+/).filter(Boolean).length;
+  const wpm=minutes>0?words/minutes:0;
+  const ghostTime=raceTarget.split(/\s+/).filter(Boolean).length/(raceGhostWPM/60);
+  let result='Your WPM: '+wpm.toFixed(1)+' | Ghost finishes in '+ghostTime.toFixed(1)+'s.';
+  if(text===raceTarget){
+    const totalSec=(now-raceStart)/1000;
+    result+=' Finished! Time: '+totalSec.toFixed(2)+'s.';
+    unlockAchievement('Typing Racer');
+  }
+  document.getElementById('raceStats').textContent=result;
+});
+newRaceText();
+
+/* Vocab challenge */
+const vocabData=[
+  {word:'Ubiquitous',options:['Very rare','Present everywhere','Extremely noisy','Hidden carefully'],a:1},
+  {word:'Mitigate',options:['Make less severe','Copy exactly','Ignore completely','Explain in detail'],a:0},
+  {word:'Ambiguous',options:['Very clear','Open to many meanings','Impossible to see','Funny'],a:1}
+];
+let vocabIndex=0;
+function renderVocab(){
+  const obj=vocabData[vocabIndex];
+  document.getElementById('vocabWord').textContent=obj.word;
+  const wrap=document.getElementById('vocabOptions');
+  wrap.innerHTML='';
+  obj.options.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='quiz-option';
+    div.textContent=t;
+    div.onclick=()=>{
+      if(i===obj.a)div.classList.add('correct');
+      else div.classList.add('wrong');
+      [...wrap.children].forEach(c=>c.style.pointerEvents='none');
+    };
+    wrap.appendChild(div);
+  });
+}
+function nextVocab(){
+  vocabIndex=(vocabIndex+1)%vocabData.length;
+  renderVocab();
+  markGamePlayed();
+}
+renderVocab();
+
+/* Pattern memory (Simon) */
+let patternSequence=[];
+let patternUser=[];
+let patternActive=false;
+function startPattern(){
+  patternSequence=[Math.floor(Math.random()*4)];
+  patternUser=[];
+  patternActive=true;
+  playPattern();
+  markGamePlayed();
+}
+function playPattern(){
+  let i=0;
+  const buttons=document.querySelectorAll('#patternGrid .tile-btn');
+  document.getElementById('patternOutput').textContent='Watch the pattern...';
+  const interval=setInterval(()=>{
+    buttons.forEach(b=>b.style.opacity='0.8');
+    const btn=buttons[patternSequence[i]];
+    btn.style.opacity='1';
+    setTimeout(()=>btn.style.opacity='0.8',250);
+    i++;
+    if(i>=patternSequence.length){
+      clearInterval(interval);
+      patternUser=[];
+      document.getElementById('patternOutput').textContent='Your turn.';
+    }
+  },500);
+}
+function pressPattern(index){
+  if(!patternActive||patternUser.length>=patternSequence.length)return;
+  patternUser.push(index);
+  if(patternUser[patternUser.length-1]!==patternSequence[patternUser.length-1]){
+    document.getElementById('patternOutput').textContent='Wrong! Sequence length reached: '+patternSequence.length;
+    patternActive=false;
+    return;
+  }
+  if(patternUser.length===patternSequence.length){
+    document.getElementById('patternOutput').textContent='Correct! Level '+patternSequence.length+'.';
+    patternSequence.push(Math.floor(Math.random()*4));
+    setTimeout(playPattern,600);
+  }
+}
+
+/* ========= SOCIAL HELPERS ========= */
+function copyFromElement(id){
+  const text=document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text);
+}
+
+/* ========= EASTER EGGS & CHAOS ========= */
+let brandClicks=0;
+document.querySelector('.brand').addEventListener('click',()=>{
+  brandClicks++;
+  if(brandClicks===5){
+    toggleChaos(true);
+    unlockAchievement('You Found a Secret');
+  }
+});
+let chaosOn=false;
+function toggleChaos(force){
+  if(typeof force==='boolean')chaosOn=force;else chaosOn=!chaosOn;
+  if(chaosOn){
+    document.body.classList.add('chaos-mode');
+    changeAccent('#ff0000');
+    setGradient('matrix');
+    toggleCursorTrail(true);
+    setCursorEmoji('💥');
+  }else{
+    document.body.classList.remove('chaos-mode');
+    changeAccent('#ff6bff');
+    setGradient('candy');
+    setCursorEmoji('✨');
+  }
+}
+/* console function */
+function rameshSecret(){
+  console.log("You unlocked a secret mode.");
+  unlockAchievement('Console Hacker');
+  toggleChaos(true);
+}
+
+/* ========= INITIALIZE ========= */
+setTheme('neon'); // default
 </script>
 </body>
 </html>
