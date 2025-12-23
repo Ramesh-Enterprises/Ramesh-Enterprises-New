@@ -92,6 +92,8 @@ input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:
     <button onclick="generate('business')">Business Name</button>
     <button onclick="generate('joke')">Joke</button>
     <button onclick="generate('nickname')">Nickname</button>
+    <button onclick="generate('poetry')">Poetry</button>
+    <button onclick="generate('challenge')">Random Challenge</button>
   </div>
   <p id="genOutput"></p>
   <button onclick="showSection('hub')">⬅ Back</button>
@@ -153,7 +155,7 @@ function registerUser(){
     .then(res=>{
       user=res.user;
       coins=0; xp=0; level=1;
-      save();
+      saveStats();
       showSection('hub');
     })
     .catch(err=>document.getElementById('regMsg').innerText=err.message);
@@ -166,7 +168,18 @@ function loginUser(){
   auth.signInWithEmailAndPassword(email,pass)
     .then(res=>{
       user=res.user;
-      initUser();
+      const isAdmin = (user.email==='rameshenterprises@protonmail.com');
+      db.ref('users/'+user.uid).once('value').then(snap=>{
+        const data = snap.val();
+        coins = data?.coins || 0;
+        xp = data?.xp || 0;
+        level = data?.level || 1;
+        updateStats();
+        trackOnline();
+        updateLeaderboard();
+        showSection('hub');
+        if(isAdmin) document.getElementById('adminBtn').style.display='block';
+      });
     })
     .catch(err=>document.getElementById('loginMsg').innerText=err.message);
 }
@@ -174,31 +187,14 @@ function loginUser(){
 // LOGOUT
 function logoutUser(){auth.signOut(); showSection('loginSection');}
 
-// INIT USER
-function initUser(){
-  const uid=user.uid;
-  const isAdmin = (user.email==='rameshenterprises@protonmail.com');
-  db.ref('users/' + uid).once('value').then(snap=>{
-    const data = snap.val();
-    coins = data?.coins || 0;
-    xp = data?.xp || 0;
-    level = data?.level || 1;
-    updateStats();
-    trackOnline();
-    updateLeaderboard();
-    showSection('hub');
-    if(isAdmin) document.getElementById('adminBtn').style.display='block';
-  });
-}
-
 // SAVE STATS
-function save(){db.ref('users/'+user.uid).set({coins,xp,level}); updateStats(); updateLeaderboard();}
-function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} save();}
-function addCoins(a){coins+=a; save();}
+function saveStats(){db.ref('users/'+user.uid).set({coins,xp,level,email:user.email}); updateStats();}
+function addCoins(a){coins+=a; saveStats();}
+function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} saveStats();}
 function updateStats(){
-  document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Level ${level}`;
+  document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Lv.${level}`;
   document.getElementById('xpBar').style.width=Math.floor(xp/(level*100)*100)+'%';
-  document.getElementById('xpText').innerText=`XP: ${xp} / ${level*100}`;
+  document.getElementById('xpText').innerText=`XP: ${xp}/${level*100}`;
 }
 
 // ONLINE USERS
@@ -216,9 +212,11 @@ function trackOnline(){
 
 // LEADERBOARD
 function updateLeaderboard(){
-  db.ref('users').orderByChild('coins').limitToLast(5).once('value',snap=>{
-    const data = snap.val(); let html='';
-    for(let uid in data){const u=data[uid]; html+=`<div>${u.coins} 🪙 | Lv.${u.level}</div>`;}
+  db.ref('users').orderByChild('coins').limitToLast(10).on('value',snap=>{
+    const data = snap.val(); if(!data) return;
+    let arr=[]; for(let uid in data) arr.push({email:data[uid].email, coins:data[uid].coins, level:data[uid].level});
+    arr.sort((a,b)=>b.coins-a.coins);
+    let html=''; arr.forEach(u=>{html+=`<div>${u.email}: ${u.coins} 🪙 | Lv.${u.level}</div>`;});
     document.getElementById('hubLeaderboard').innerHTML=html;
   });
 }
@@ -228,13 +226,13 @@ function wipeLeaderboard(){db.ref('users').remove(); alert("Leaderboard wiped");
 
 // GAMES
 function guessNumber(){let n=Math.ceil(Math.random()*10); let ans=prompt("Guess 1-10"); if(Number(ans)===n){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! It was "+n);}
-function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! Coins: "+(d*5)+" XP: "+(d*5)); addCoins(d*5); addXP(d*5);}
+function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! +Coins:"+d*5+" +XP:"+d*5); addCoins(d*5); addXP(d*5);}
 function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
-function clickSpeedTest(){alert("Click OK fast 5 times!"); let start=Date.now(); for(let i=0;i<5;i++){prompt("Click!");} let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s, XP: "+(50-t)+", Coins: "+(50-t)); addXP(50-t); addCoins(50-t);}
-function typingTest(){let text="Ramesh Fun Hub is awesome!"; let start=Date.now(); let input=prompt("Type:\n"+text); let t=Math.floor((Date.now()-start)/1000); if(input===text){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect typing.");}
+function clickSpeedTest(){alert("Click OK 5 times quickly"); let start=Date.now(); for(let i=0;i<5;i++) prompt("Click!"); let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s | Coins/XP: "+(50-t)); addCoins(50-t); addXP(50-t);}
+function typingTest(){let txt="Ramesh Fun Hub"; let start=Date.now(); let input=prompt("Type: "+txt); let t=Math.floor((Date.now()-start)/1000); if(input===txt){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect.");}
 
 // GENERATORS
-const genData={business:["Ramesh Corp","Fun Studios"],nickname:["Ramesh123","FunMaster"],joke:["Why code? Fun!"]};
+const genData={business:["Ramesh Corp","Fun Studios"],joke:["Why code? Fun!","JavaScript is fun!"],nickname:["Ramesh123","FunMaster"],poetry:["Roses are red, code is blue","JS makes dreams true"],challenge:["Do 10 pushups","Drink water"]};
 function generate(type){const arr=genData[type]; const val=arr[Math.floor(Math.random()*arr.length)]; document.getElementById('genOutput').innerText=val;}
 
 // AI
@@ -242,11 +240,7 @@ function aiRespond(){const input=document.getElementById('aiInput').value.toLowe
 
 // CUSTOMIZATION
 let darkMode=true;
-function toggleDark(){
-  if(darkMode){document.body.style.background='#fff'; document.body.style.color='#000';}
-  else{document.body.style.background='#0f1220'; document.body.style.color='#fff';}
-  darkMode=!darkMode;
-}
+function toggleDark(){if(darkMode){document.body.style.background='#fff';document.body.style.color='#000';}else{document.body.style.background='#0f1220';document.body.style.color='#fff';} darkMode=!darkMode;}
 function changeAccent(c){document.documentElement.style.setProperty('--accent',c);}
 </script>
 </body>
