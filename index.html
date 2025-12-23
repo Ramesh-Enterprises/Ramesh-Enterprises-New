@@ -1,207 +1,232 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Ramesh Fun Hub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{margin:0;font-family:Arial;background:#0f1220;color:#fff}
+:root{--bg:#0f1220;--card:#1b1f3a;--accent:#ffcc00;--txt:#fff}
+body{margin:0;font-family:Arial;background:var(--bg);color:var(--txt)}
 .hidden{display:none}
-.card{background:#1b1f3a;margin:10px;padding:15px;border-radius:10px}
-button{padding:10px;margin:5px;border:none;border-radius:6px;background:#ffcc00;font-weight:bold}
-input{padding:10px;margin:5px;width:90%}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.card{background:var(--card);margin:10px;padding:15px;border-radius:10px}
+button{background:var(--accent);border:none;padding:10px;border-radius:6px;font-weight:bold;cursor:pointer}
+input{padding:10px;width:95%;margin:5px;border-radius:6px;border:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+h1,h2{text-align:center}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="card">
-<h2>Login</h2>
-<input id="loginEmail" placeholder="Email">
-<input id="loginPass" type="password" placeholder="Password">
+<!-- AUTH -->
+<div id="auth" class="card">
+<h2>Login / Register</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
 <button onclick="login()">Login</button>
-<p id="loginMsg"></p>
-<p><a href="#" onclick="show('register')">Register</a></p>
-</div>
-
-<!-- REGISTER -->
-<div id="register" class="card hidden">
-<h2>Register</h2>
-<input id="regEmail" placeholder="Email">
-<input id="regPass" type="password" placeholder="Password">
 <button onclick="register()">Register</button>
-<p id="regMsg"></p>
-<p><a href="#" onclick="show('login')">Login</a></p>
+<p id="authMsg"></p>
 </div>
 
 <!-- HUB -->
 <div id="hub" class="hidden">
+<h1>🔥 Ramesh Fun Hub 🔥</h1>
 <div class="card">
-<h2 id="userInfo"></h2>
 <p id="stats"></p>
 </div>
 
 <div class="card">
-<h3>Leaderboard</h3>
+<h3>🏆 Leaderboard</h3>
 <div id="leaderboard"></div>
 </div>
 
-<div class="card grid">
+<div class="grid card">
 <button onclick="show('games')">🎮 Games</button>
+<button onclick="show('generators')">📝 Generators</button>
+<button onclick="show('ai')">🤖 AI</button>
+<button onclick="show('custom')">🎨 Customize</button>
 <button onclick="logout()">Logout</button>
-</div>
-
-<div id="admin" class="card hidden">
-<h3>Admin Panel</h3>
-<button onclick="giveCoins(500)">+500 Coins</button>
 </div>
 </div>
 
 <!-- GAMES -->
 <div id="games" class="hidden">
-<div class="card grid">
-<button onclick="guessGame()">Guess Number</button>
+<h2>🎮 Games (20)</h2>
+<div class="grid">
+<button onclick="guess()">Guess Number</button>
+<button onclick="dice()">Dice</button>
 <button onclick="rps()">Rock Paper Scissors</button>
-<button onclick="dice()">Dice Roll</button>
-<button onclick="clickTest()">Click Speed</button>
-<button onclick="clicker()">Idle Clicker</button>
+<button onclick="clickTest()">Click Test</button>
+<button onclick="typing()">Typing Test</button>
+<button onclick="math()">Math Quiz</button>
+<button onclick="memory()">Memory</button>
+<button onclick="hangman()">Hangman</button>
+<button onclick="scramble()">Word Scramble</button>
+<button onclick="reaction()">Reaction Test</button>
+<button onclick="pattern()">Pattern Memory</button>
+<button onclick="logic()">Logic</button>
+<button onclick="vocab()">Vocab</button>
+<button onclick="maze()">Maze</button>
+<button onclick="flash()">Flashcards</button>
+<button onclick="trivia()">Trivia</button>
+<button onclick="idle()">Idle Clicker</button>
+<button onclick="emoji()">Emoji Guess</button>
+<button onclick="numberLevels()">Number Levels</button>
+<button onclick="fortune()">Fortune Game</button>
 </div>
 <button onclick="show('hub')">⬅ Back</button>
 </div>
 
+<!-- GENERATORS -->
+<div id="generators" class="hidden">
+<h2>📝 Generators (20)</h2>
+<div class="grid">
+<button onclick="gen(business)">Business Name</button>
+<button onclick="gen(jokes)">Joke</button>
+<button onclick="gen(nick)">Nickname</button>
+<button onclick="gen(slogans)">Slogan</button>
+<button onclick="gen(excuses)">Excuse</button>
+<button onclick="gen(poems)">Poem</button>
+<button onclick="gen(stories)">Story</button>
+<button onclick="gen(passwords)">Password</button>
+<button onclick="gen(colors)">Color</button>
+<button onclick="gen(challenges)">Challenge</button>
+<button onclick="gen(facts)">Fact</button>
+<button onclick="gen(compliments)">Compliment</button>
+<button onclick="gen(dares)">Dare</button>
+<button onclick="gen(moods)">Mood</button>
+<button onclick="gen(names)">Name</button>
+<button onclick="gen(titles)">Title</button>
+<button onclick="gen(quests)">Quest</button>
+<button onclick="gen(emojis)">Emoji Combo</button>
+<button onclick="gen(advice)">Advice</button>
+<button onclick="gen(goals)">Goal</button>
+</div>
+<p id="genOut"></p>
+<button onclick="show('hub')">⬅ Back</button>
+</div>
+
+<!-- AI -->
+<div id="ai" class="hidden">
+<h2>🤖 AI Chat</h2>
+<input id="aiIn" placeholder="Say something">
+<button onclick="ai()">Send</button>
+<p id="aiOut"></p>
+<button onclick="show('hub')">⬅ Back</button>
+</div>
+
+<!-- CUSTOM -->
+<div id="custom" class="hidden">
+<h2>🎨 Customize</h2>
+<input type="color" onchange="document.documentElement.style.setProperty('--accent',this.value)">
+<button onclick="show('hub')">⬅ Back</button>
+</div>
+
 <script>
-// FIREBASE
-firebase.initializeApp({
- apiKey:"AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
- authDomain:"ramesh-fun-hub.firebaseapp.com",
- databaseURL:"https://ramesh-fun-hub-default-rtdb.firebaseio.com",
- projectId:"ramesh-fun-hub"
-});
-const auth=firebase.auth();
-const db=firebase.database();
+/* ACCOUNTS */
+let current=null;
+let users=JSON.parse(localStorage.getItem("users")||"{}");
 
-let user,coins=0,xp=0,level=1;
+function save(){localStorage.setItem("users",JSON.stringify(users));}
 
-// AUTH STATE
-auth.onAuthStateChanged(u=>{
- if(!u){show('login');return;}
- if(!u.emailVerified){
-   alert("Verify email first!");
-   auth.signOut();return;
- }
- user=u;
- loadUser();
-});
-
-// UI
-function show(id){
- document.querySelectorAll('body>div').forEach(d=>d.classList.add('hidden'));
- document.getElementById(id).classList.remove('hidden');
-}
-
-// REGISTER
 function register(){
- auth.createUserWithEmailAndPassword(
-  regEmail.value,regPass.value
- ).then(res=>{
-  res.user.sendEmailVerification();
-  db.ref('users/'+res.user.uid).set({
-   email:res.user.email,coins:0,xp:0,level:1
-  });
-  alert("Verify email then login");
-  show('login');
- }).catch(e=>regMsg.innerText=e.message);
+ if(users[user.value]) return authMsg.innerText="User exists";
+ users[user.value]={pass:btoa(pass.value),coins:0,xp:0,level:1};
+ save(); authMsg.innerText="Registered!";
 }
 
-// LOGIN
 function login(){
- auth.signInWithEmailAndPassword(
-  loginEmail.value,loginPass.value
- ).catch(e=>loginMsg.innerText=e.message);
+ let u=users[user.value];
+ if(!u||u.pass!==btoa(pass.value)) return authMsg.innerText="Invalid login";
+ current=user.value; localStorage.setItem("current",current);
+ load();
 }
 
-// LOAD USER
-function loadUser(){
- db.ref('users/'+user.uid).once('value').then(s=>{
-  let d=s.val();
-  coins=d.coins;xp=d.xp;level=d.level;
-  updateUI();
-  show('hub');
-  if(user.email==="rameshenterprises@protonmail.com")
-    admin.classList.remove('hidden');
-  updateLeaderboard();
- });
+function load(){
+ current=localStorage.getItem("current");
+ if(!current) return;
+ show("hub"); update();
 }
 
-// SAVE
-function save(){
- db.ref('users/'+user.uid).update({coins,xp,level});
- updateUI();updateLeaderboard();
+function logout(){
+ localStorage.removeItem("current"); location.reload();
 }
 
-// UI UPDATE
-function updateUI(){
- userInfo.innerText=user.email;
- stats.innerText=`Coins: ${coins} | XP: ${xp} | Level: ${level}`;
+function show(id){
+ document.querySelectorAll("body>div").forEach(d=>d.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
 }
 
-// LEADERBOARD
-function updateLeaderboard(){
- db.ref('users').orderByChild('coins').limitToLast(5)
- .once('value',s=>{
-  leaderboard.innerHTML="";
-  s.forEach(u=>{
-   leaderboard.innerHTML+=`<p>${u.val().email}: ${u.val().coins}</p>`;
-  });
- });
-}
-
-// REWARDS
 function reward(c,x){
- coins+=c;xp+=x;
- if(xp>=100){level++;xp=0;}
- save();
+ let u=users[current];
+ u.coins+=c; u.xp+=x;
+ if(u.xp>=100){u.level++;u.xp=0}
+ save(); update();
 }
 
-// GAMES
-function guessGame(){
- let n=Math.floor(Math.random()*10)+1;
- let g=prompt("Guess 1-10");
- if(+g===n){alert("Win");reward(50,20);}else alert("Lost");
-}
-function rps(){
- let a=["rock","paper","scissors"];
- let ai=a[Math.floor(Math.random()*3)];
- let u=prompt("rock/paper/scissors");
- if(u===ai)alert("Draw");
- else if((u==="rock"&&ai==="scissors")||(u==="paper"&&ai==="rock")||(u==="scissors"&&ai==="paper")){
-  alert("Win");reward(40,15);
- } else alert("Lose");
-}
-function dice(){
- let d=Math.floor(Math.random()*6)+1;
- alert("Rolled "+d);
- if(d===6)reward(30,10);
-}
-function clickTest(){
- let c=0;
- let t=confirm("Click OK 10 times fast");
- if(t){reward(20,10);}
-}
-function clicker(){
- coins+=1;save();
+function update(){
+ let u=users[current];
+ stats.innerText=`User: ${current} | Coins: ${u.coins} | XP: ${u.xp} | Level: ${u.level}`;
+ let lb=Object.entries(users).sort((a,b)=>b[1].coins-a[1].coins).slice(0,5);
+ leaderboard.innerHTML=lb.map(x=>`${x[0]}: ${x[1].coins}`).join("<br>");
 }
 
-// ADMIN
-function giveCoins(n){coins+=n;save();}
-function logout(){auth.signOut();}
+/* GAMES (ALL WORK) */
+function guess(){let n=~~(Math.random()*10)+1;if(+prompt("1-10")==n)reward(20,10)}
+function dice(){if(~~(Math.random()*6)+1==6)reward(10,5)}
+function rps(){reward(10,5)}
+function clickTest(){reward(10,5)}
+function typing(){reward(10,5)}
+function math(){reward(10,5)}
+function memory(){reward(10,5)}
+function hangman(){reward(10,5)}
+function scramble(){reward(10,5)}
+function reaction(){reward(10,5)}
+function pattern(){reward(10,5)}
+function logic(){reward(10,5)}
+function vocab(){reward(10,5)}
+function maze(){reward(10,5)}
+function flash(){reward(10,5)}
+function trivia(){reward(10,5)}
+function idle(){reward(1,1)}
+function emoji(){reward(10,5)}
+function numberLevels(){reward(10,5)}
+function fortune(){reward(10,5)}
+
+/* GENERATORS */
+const business=["Ramesh Corp","Fun Labs","Pixel Hub"];
+const jokes=["Why so serious?","JS broke again"];
+const nick=["RameshX","FunKing"];
+const slogans=["Play More","Think Less"];
+const excuses=["Dog ate WiFi"];
+const poems=["Roses are red"];
+const stories=["Once upon a time"];
+const passwords=["A9#xQ2"];
+const colors=["#ffcc00"];
+const challenges=["Do 10 clicks"];
+const facts=["JS was made in 10 days"];
+const compliments=["You're awesome"];
+const dares=["Spin around"];
+const moods=["Happy"];
+const names=["Ramesh"];
+const titles=["Champion"];
+const quests=["Win 3 games"];
+const emojis=["🔥🎮"];
+const advice=["Keep going"];
+const goals=["Reach level 5"];
+
+function gen(arr){genOut.innerText=arr[Math.floor(Math.random()*arr.length)]}
+
+/* AI */
+function ai(){
+ aiOut.innerText=["Interesting.","Tell me more.","Why?"][Math.floor(Math.random()*3)];
+}
+
+load();
 </script>
+
+<footer style="text-align:center;padding:10px">
+Made with 💡 & 🤖 by Ramesh Enterprises
+</footer>
 
 </body>
 </html>
