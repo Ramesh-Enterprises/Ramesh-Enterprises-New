@@ -16,7 +16,7 @@
 }
 body{
   margin:0;font-family:"Trebuchet MS",sans-serif;
-  background:var(--bg);color:var(--text);cursor:url("https://twemoji.maxcdn.com/v/latest/svg/1f47e.svg") 16 16,auto;
+  background:var(--bg);color:var(--text);
 }
 .section{display:none;padding:15px;}
 .active{display:block;}
@@ -33,11 +33,10 @@ input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:
 <!-- LOGIN -->
 <div id="login" class="section active">
   <div class="card">
-    <h2>Login / Register</h2>
+    <h2>Login</h2>
     <input id="email" type="email" placeholder="Email"><br>
     <input id="pass" type="password" placeholder="Password"><br>
     <button onclick="loginUser()">Login</button>
-    <button onclick="registerUser()">Register</button>
     <p id="loginMsg"></p>
   </div>
 </div>
@@ -151,47 +150,58 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-// STATE
 let user=null, coins=0, xp=0, level=1;
 
-// NAV
 function showSection(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// LOGIN / REGISTER
-function loginUser(){const email=document.getElementById('email').value;const pass=document.getElementById('pass').value;
-  auth.signInWithEmailAndPassword(email,pass).then(res=>{user=res.user; initUser();}).catch(err=>document.getElementById('loginMsg').innerText=err.message);}
-function registerUser(){const email=document.getElementById('email').value;const pass=document.getElementById('pass').value;
-  auth.createUserWithEmailAndPassword(email,pass).then(res=>{user=res.user; initUser();}).catch(err=>document.getElementById('loginMsg').innerText=err.message);}
+// LOGIN AUTOMATIC WITH AUTO-REGISTER
+function loginUser(){
+  const email=document.getElementById('email').value;
+  const pass=document.getElementById('pass').value;
+  auth.signInWithEmailAndPassword(email,pass)
+  .then(res=>{user=res.user; initUser();})
+  .catch(err=>{
+    if(err.code==='auth/user-not-found'){
+      // Create user automatically
+      auth.createUserWithEmailAndPassword(email,pass)
+      .then(res=>{user=res.user; initUser();})
+      .catch(err2=>document.getElementById('loginMsg').innerText=err2.message);
+    } else {
+      document.getElementById('loginMsg').innerText=err.message;
+    }
+  });
+}
 
 // INIT USER DATA
 function initUser(){
   const uid=user.uid;
+  const isAdmin=user.email==='rameshenterprises@protonmail.com';
   db.ref('users/'+uid).once('value').then(snap=>{
     const data=snap.val();
     coins=data?.coins||0; xp=data?.xp||0; level=data?.level||1;
-    updateStats(); trackOnline(); updateLeaderboard(); showSection('hub');
-    if(user.email==='rameshenterprises@protonmail.com') document.getElementById('adminBtn').style.display='block';
+    updateStats();
+    trackOnline();
+    updateLeaderboard();
+    showSection('hub');
+    if(isAdmin) document.getElementById('adminBtn').style.display='block';
   });
 }
 
 // SAVE
-function save(){const uid=user.uid; db.ref('users/'+uid).set({coins,xp,level}); updateStats(); updateLeaderboard();}
-
-// XP / LEVEL
+function save(){db.ref('users/'+user.uid).set({coins,xp,level}); updateStats(); updateLeaderboard();}
 function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} save();}
 function addCoins(a){coins+=a; save();}
 
-// HUB
 function updateStats(){
   document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Level ${level}`;
   document.getElementById('xpBar').style.width=Math.floor(xp/(level*100)*100)+'%';
   document.getElementById('xpText').innerText=`XP: ${xp} / ${level*100}`;
 }
 
-// ONLINE USERS
+// ONLINE
 function trackOnline(){
   const uid=user.uid;
   const onlineRef=db.ref('online/'+uid);
@@ -212,7 +222,7 @@ function updateLeaderboard(){
 // ADMIN
 function wipeLeaderboard(){db.ref('users').remove(); alert("Leaderboard wiped");}
 
-// 🎮 GAMES
+// GAMES
 function guessNumber(){let n=Math.ceil(Math.random()*10); let ans=prompt("Guess 1-10"); if(Number(ans)===n){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! It was "+n);}
 function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! Coins: "+(d*5)+" XP: "+(d*5)); addCoins(d*5); addXP(d*5);}
 function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
