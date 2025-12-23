@@ -1,270 +1,207 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ramesh Fun Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <style>
-:root{--bg-dark:#0f1220;--text-dark:#fff;--card-dark:#1b1f3a;--accent:#ffcc00;}
-body{margin:0;font-family:"Trebuchet MS",sans-serif;background:var(--bg-dark);color:var(--text-dark);}
-.section{display:none;padding:15px;}
-.active{display:block;}
-.card{background:var(--card-dark);padding:12px;margin:10px 0;border-radius:10px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
-button{background:var(--accent);border:none;padding:10px 12px;margin:3px;border-radius:6px;font-weight:bold;cursor:pointer;}
-input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:14px;}
-#xpBarContainer{background:#333;border-radius:10px;margin-top:5px;}
-#xpBar{height:16px;width:0%;background:var(--accent);border-radius:10px;transition:width 0.5s;}
+body{margin:0;font-family:Arial;background:#0f1220;color:#fff}
+.hidden{display:none}
+.card{background:#1b1f3a;margin:10px;padding:15px;border-radius:10px}
+button{padding:10px;margin:5px;border:none;border-radius:6px;background:#ffcc00;font-weight:bold}
+input{padding:10px;margin:5px;width:90%}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="loginSection" class="section active">
-  <div class="card">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Password">
-    <button onclick="loginUser()">Login</button>
-    <p>Or <a href="#" onclick="showSection('registerSection')">Register</a></p>
-    <p id="loginMsg"></p>
-  </div>
+<div id="login" class="card">
+<h2>Login</h2>
+<input id="loginEmail" placeholder="Email">
+<input id="loginPass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p id="loginMsg"></p>
+<p><a href="#" onclick="show('register')">Register</a></p>
 </div>
 
 <!-- REGISTER -->
-<div id="registerSection" class="section">
-  <div class="card">
-    <h2>Register</h2>
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="password" id="regPass" placeholder="Password">
-    <button onclick="registerUser()">Register</button>
-    <p>Or <a href="#" onclick="showSection('loginSection')">Login</a></p>
-    <p id="regMsg"></p>
-  </div>
+<div id="register" class="card hidden">
+<h2>Register</h2>
+<input id="regEmail" placeholder="Email">
+<input id="regPass" type="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<p id="regMsg"></p>
+<p><a href="#" onclick="show('login')">Login</a></p>
 </div>
 
 <!-- HUB -->
-<div id="hub" class="section">
-  <h1>🔥 Ramesh Fun Hub 🔥</h1>
-  <div class="card">
-    <p id="userStats"></p>
-    <div id="xpBarContainer"><div id="xpBar"></div></div>
-    <p id="xpText"></p>
-  </div>
-  <div class="card">
-    <h2>🏆 Top Players</h2>
-    <div id="hubLeaderboard"></div>
-  </div>
-  <div class="card">
-    <h2>🟢 Online Users</h2>
-    <p id="onlineUsers"></p>
-  </div>
-  <div class="grid">
-    <button onclick="showSection('games')">🎮 Games</button>
-    <button onclick="showSection('generators')">📝 Generators</button>
-    <button onclick="showSection('ai')">🤖 AI Chat</button>
-    <button id="adminBtn" style="display:none;" onclick="showSection('admin')">👑 Admin</button>
-    <button onclick="showSection('custom')">🎨 Customize</button>
-    <button onclick="logoutUser()">Logout</button>
-  </div>
+<div id="hub" class="hidden">
+<div class="card">
+<h2 id="userInfo"></h2>
+<p id="stats"></p>
+</div>
+
+<div class="card">
+<h3>Leaderboard</h3>
+<div id="leaderboard"></div>
+</div>
+
+<div class="card grid">
+<button onclick="show('games')">🎮 Games</button>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div id="admin" class="card hidden">
+<h3>Admin Panel</h3>
+<button onclick="giveCoins(500)">+500 Coins</button>
+</div>
 </div>
 
 <!-- GAMES -->
-<div id="games" class="section">
-  <h2>🎮 Games</h2>
-  <div class="grid">
-    <button onclick="guessNumber()">Guess Number</button>
-    <button onclick="diceRoll()">Dice Roll</button>
-    <button onclick="rockPaperScissors()">Rock Paper Scissors</button>
-    <button onclick="clickSpeedTest()">Click Speed Test</button>
-    <button onclick="typingTest()">Typing Test</button>
-    <button onclick="hangman()">Hangman</button>
-    <button onclick="wordScramble()">Word Scramble</button>
-    <button onclick="diceGuess()">Dice Guessing Game</button>
-    <button onclick="reactionTimeTest()">Reaction Test</button>
-    <button onclick="mathPuzzle()">Math Puzzle</button>
-  </div>
-  <button onclick="showSection('hub')">⬅ Back</button>
+<div id="games" class="hidden">
+<div class="card grid">
+<button onclick="guessGame()">Guess Number</button>
+<button onclick="rps()">Rock Paper Scissors</button>
+<button onclick="dice()">Dice Roll</button>
+<button onclick="clickTest()">Click Speed</button>
+<button onclick="clicker()">Idle Clicker</button>
 </div>
-
-<!-- GENERATORS -->
-<div id="generators" class="section">
-  <h2>📝 Generators</h2>
-  <div class="grid">
-    <button onclick="generate('business')">Business Name</button>
-    <button onclick="generate('joke')">Joke</button>
-    <button onclick="generate('nickname')">Nickname</button>
-    <button onclick="generate('poetry')">Poetry</button>
-    <button onclick="generate('challenge')">Random Challenge</button>
-  </div>
-  <p id="genOutput"></p>
-  <button onclick="showSection('hub')">⬅ Back</button>
-</div>
-
-<!-- AI CHAT -->
-<div id="ai" class="section">
-  <h2>🤖 AI Chat</h2>
-  <input id="aiInput" placeholder="Say something">
-  <button onclick="aiRespond()">Talk</button>
-  <p id="aiOutput"></p>
-  <button onclick="showSection('hub')">⬅ Back</button>
-</div>
-
-<!-- CUSTOMIZATION -->
-<div id="custom" class="section">
-  <h2>🎨 Customize</h2>
-  <button onclick="toggleDark()">Toggle Dark / Light</button>
-  <input type="color" id="accentPicker" onchange="changeAccent(this.value)">
-  <button onclick="showSection('hub')">⬅ Back</button>
-</div>
-
-<!-- ADMIN -->
-<div id="admin" class="section">
-  <h2>👑 Admin Panel</h2>
-  <button onclick="addCoins(500)">+500 Coins</button>
-  <button onclick="wipeLeaderboard()">Reset Leaderboard</button>
-  <button onclick="showSection('hub')">⬅ Back</button>
+<button onclick="show('hub')">⬅ Back</button>
 </div>
 
 <script>
-// FIREBASE CONFIG
-const firebaseConfig = {
-  apiKey: "AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
-  authDomain: "ramesh-fun-hub.firebaseapp.com",
-  databaseURL: "https://ramesh-fun-hub-default-rtdb.firebaseio.com",
-  projectId: "ramesh-fun-hub",
-  storageBucket: "ramesh-fun-hub.firebasestorage.app",
-  messagingSenderId: "670023868444",
-  appId: "1:670023868444:web:7f1f2bc88408fb3ad53fd9"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.database();
+// FIREBASE
+firebase.initializeApp({
+ apiKey:"AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
+ authDomain:"ramesh-fun-hub.firebaseapp.com",
+ databaseURL:"https://ramesh-fun-hub-default-rtdb.firebaseio.com",
+ projectId:"ramesh-fun-hub"
+});
+const auth=firebase.auth();
+const db=firebase.database();
 
-let user=null, coins=0, xp=0, level=1;
-
-// SECTION SWITCH
-function showSection(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// REGISTER USER
-function registerUser(){
-  const email = document.getElementById('regEmail').value;
-  const pass = document.getElementById('regPass').value;
-  auth.createUserWithEmailAndPassword(email, pass)
-    .then(res => {
-      user = res.user;
-      coins = 0; xp = 0; level = 1;
-      saveStats();
-      // Send email verification
-      user.sendEmailVerification()
-        .then(()=> alert("Verification email sent! Check your inbox."))
-        .catch(err=> alert("Error sending verification: "+err.message));
-    })
-    .catch(err => document.getElementById('regMsg').innerText = err.message);
-}
-
-// LOGIN USER
-function loginUser(){
-  const email = document.getElementById('loginEmail').value;
-  const pass = document.getElementById('loginPass').value;
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(err=>document.getElementById('loginMsg').innerText = err.message);
-}
+let user,coins=0,xp=0,level=1;
 
 // AUTH STATE
-auth.onAuthStateChanged(function(currentUser){
-  if(currentUser){
-    if(!currentUser.emailVerified){
-      alert("Please verify your email before logging in!");
-      auth.signOut();
-      showSection('loginSection');
-      return;
-    }
-    user=currentUser;
-    const isAdmin = (user.email==='rameshenterprises@protonmail.com');
-    db.ref('users/'+user.uid).once('value').then(snap=>{
-      const data = snap.val();
-      coins = data?.coins || 0;
-      xp = data?.xp || 0;
-      level = data?.level || 1;
-      updateStats();
-      trackOnline();
-      updateLeaderboard();
-      showSection('hub');
-      if(isAdmin) document.getElementById('adminBtn').style.display='block';
-    });
-  } else showSection('loginSection');
+auth.onAuthStateChanged(u=>{
+ if(!u){show('login');return;}
+ if(!u.emailVerified){
+   alert("Verify email first!");
+   auth.signOut();return;
+ }
+ user=u;
+ loadUser();
 });
 
-// LOGOUT
-function logoutUser(){auth.signOut();}
-
-// SAVE STATS
-function saveStats(){db.ref('users/'+user.uid).set({coins,xp,level,email:user.email}); updateStats();}
-function addCoins(a){coins+=a; saveStats();}
-function addXP(a){xp+=a; while(xp>=level*100){xp-=level*100;level++;} saveStats();}
-function updateStats(){
-  document.getElementById('userStats').innerText=`👤 ${user.email} | 🪙 ${coins} | ⭐ Lv.${level}`;
-  document.getElementById('xpBar').style.width=Math.floor(xp/(level*100)*100)+'%';
-  document.getElementById('xpText').innerText=`XP: ${xp}/${level*100}`;
+// UI
+function show(id){
+ document.querySelectorAll('body>div').forEach(d=>d.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
 }
 
-// ONLINE USERS
-function trackOnline(){
-  const uid=user.uid;
-  const onlineRef=db.ref('online/'+uid);
-  const conRef=db.ref('.info/connected');
-  conRef.on('value',snap=>{
-    if(snap.val()){onlineRef.set(true); onlineRef.onDisconnect().remove();}
+// REGISTER
+function register(){
+ auth.createUserWithEmailAndPassword(
+  regEmail.value,regPass.value
+ ).then(res=>{
+  res.user.sendEmailVerification();
+  db.ref('users/'+res.user.uid).set({
+   email:res.user.email,coins:0,xp:0,level:1
   });
-  db.ref('online').on('value',snap=>{
-    document.getElementById('onlineUsers').innerText=snap.numChildren()+' players online';
-  });
+  alert("Verify email then login");
+  show('login');
+ }).catch(e=>regMsg.innerText=e.message);
+}
+
+// LOGIN
+function login(){
+ auth.signInWithEmailAndPassword(
+  loginEmail.value,loginPass.value
+ ).catch(e=>loginMsg.innerText=e.message);
+}
+
+// LOAD USER
+function loadUser(){
+ db.ref('users/'+user.uid).once('value').then(s=>{
+  let d=s.val();
+  coins=d.coins;xp=d.xp;level=d.level;
+  updateUI();
+  show('hub');
+  if(user.email==="rameshenterprises@protonmail.com")
+    admin.classList.remove('hidden');
+  updateLeaderboard();
+ });
+}
+
+// SAVE
+function save(){
+ db.ref('users/'+user.uid).update({coins,xp,level});
+ updateUI();updateLeaderboard();
+}
+
+// UI UPDATE
+function updateUI(){
+ userInfo.innerText=user.email;
+ stats.innerText=`Coins: ${coins} | XP: ${xp} | Level: ${level}`;
 }
 
 // LEADERBOARD
 function updateLeaderboard(){
-  db.ref('users').orderByChild('coins').limitToLast(10).on('value',snap=>{
-    const data = snap.val(); if(!data) return;
-    let arr=[]; for(let uid in data) arr.push({email:data[uid].email, coins:data[uid].coins, level:data[uid].level});
-    arr.sort((a,b)=>b.coins-a.coins);
-    let html=''; arr.forEach(u=>{html+=`<div>${u.email}: ${u.coins} 🪙 | Lv.${u.level}</div>`;});
-    document.getElementById('hubLeaderboard').innerHTML=html;
+ db.ref('users').orderByChild('coins').limitToLast(5)
+ .once('value',s=>{
+  leaderboard.innerHTML="";
+  s.forEach(u=>{
+   leaderboard.innerHTML+=`<p>${u.val().email}: ${u.val().coins}</p>`;
   });
+ });
+}
+
+// REWARDS
+function reward(c,x){
+ coins+=c;xp+=x;
+ if(xp>=100){level++;xp=0;}
+ save();
+}
+
+// GAMES
+function guessGame(){
+ let n=Math.floor(Math.random()*10)+1;
+ let g=prompt("Guess 1-10");
+ if(+g===n){alert("Win");reward(50,20);}else alert("Lost");
+}
+function rps(){
+ let a=["rock","paper","scissors"];
+ let ai=a[Math.floor(Math.random()*3)];
+ let u=prompt("rock/paper/scissors");
+ if(u===ai)alert("Draw");
+ else if((u==="rock"&&ai==="scissors")||(u==="paper"&&ai==="rock")||(u==="scissors"&&ai==="paper")){
+  alert("Win");reward(40,15);
+ } else alert("Lose");
+}
+function dice(){
+ let d=Math.floor(Math.random()*6)+1;
+ alert("Rolled "+d);
+ if(d===6)reward(30,10);
+}
+function clickTest(){
+ let c=0;
+ let t=confirm("Click OK 10 times fast");
+ if(t){reward(20,10);}
+}
+function clicker(){
+ coins+=1;save();
 }
 
 // ADMIN
-function wipeLeaderboard(){db.ref('users').remove(); alert("Leaderboard wiped");}
-
-// GAMES
-function guessNumber(){let n=Math.ceil(Math.random()*10); let ans=prompt("Guess 1-10"); if(Number(ans)===n){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! It was "+n);}
-function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! +Coins:"+d*5+" +XP:"+d*5); addCoins(d*5); addXP(d*5);}
-function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
-function clickSpeedTest(){alert("Click OK 5 times quickly"); let start=Date.now(); for(let i=0;i<5;i++) prompt("Click!"); let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s | Coins/XP: "+(50-t)); addCoins(50-t); addXP(50-t);}
-function typingTest(){let txt="Ramesh Fun Hub"; let start=Date.now(); let input=prompt("Type: "+txt); let t=Math.floor((Date.now()-start)/1000); if(input===txt){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect.");}
-function hangman(){const words=["ramesh","fun","hub","javascript"]; const word=words[Math.floor(Math.random()*words.length)]; let guess=""; for(let i=0;i<6;i++){let g=prompt("Guess a letter: "+guess); if(word.includes(g)){guess+=g;} if(guess.length===word.length){alert("You win! +30 Coins +30 XP"); addCoins(30); addXP(30); return;}} alert("Out of tries! Word was "+word);}
-function wordScramble(){const words=["ramesh","fun","hub","code"]; const w=words[Math.floor(Math.random()*words.length)]; const scrambled=w.split('').sort(()=>0.5-Math.random()).join(''); let ans=prompt("Unscramble: "+scrambled); if(ans===w){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! Word was "+w);}
-function diceGuess(){let d=Math.ceil(Math.random()*6); let g=prompt("Guess the dice 1-6"); if(Number(g)===d){alert("Correct! +25 Coins +25 XP"); addCoins(25); addXP(25);} else alert("Wrong! Dice was "+d);}
-function reactionTimeTest(){alert("Click OK when you see 'GO'"); setTimeout(()=>{let start=Date.now(); let input=prompt("GO! Click OK"); let t=(Date.now()-start)/1000; alert("Time: "+t.toFixed(2)+"s | Coins/XP: "+Math.max(10-Math.floor(t*2),1)); addCoins(Math.max(10-Math.floor(t*2),1)); addXP(Math.max(10-Math.floor(t*2),1));},1000+Math.random()*2000);}
-function mathPuzzle(){let a=Math.ceil(Math.random()*10),b=Math.ceil(Math.random()*10); let ans=prompt(`Solve: ${a}+${b}=`); if(Number(ans)===a+b){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! Answer was "+(a+b));}
-
-// GENERATORS
-const genData={business:["Ramesh Corp","Fun Studios"],joke:["Why code? Fun!","JavaScript is fun!"],nickname:["Ramesh123","FunMaster"],poetry:["Roses are red, code is blue","JS makes dreams true"],challenge:["Do 10 pushups","Drink water"]};
-function generate(type){const arr=genData[type]; const val=arr[Math.floor(Math.random()*arr.length)]; document.getElementById('genOutput').innerText=val;}
-
-// AI
-function aiRespond(){const input=document.getElementById('aiInput').value.toLowerCase(); const responses=["Hmm!","😂","I see!","Try harder!","Cool!"]; document.getElementById('aiOutput').innerText=responses[Math.floor(Math.random()*responses.length)];}
-
-// CUSTOMIZATION
-let darkMode=true;
-function toggleDark(){if(darkMode){document.body.style.background='#fff';document.body.style.color='#000';}else{document.body.style.background='#0f1220';document.body.style.color='#fff';} darkMode=!darkMode;}
-function changeAccent(c){document.documentElement.style.setProperty('--accent',c);}
+function giveCoins(n){coins+=n;save();}
+function logout(){auth.signOut();}
 </script>
+
 </body>
 </html>
