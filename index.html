@@ -81,6 +81,11 @@ input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:
     <button onclick="rockPaperScissors()">Rock Paper Scissors</button>
     <button onclick="clickSpeedTest()">Click Speed Test</button>
     <button onclick="typingTest()">Typing Test</button>
+    <button onclick="hangman()">Hangman</button>
+    <button onclick="wordScramble()">Word Scramble</button>
+    <button onclick="diceGuess()">Dice Guessing Game</button>
+    <button onclick="reactionTimeTest()">Reaction Test</button>
+    <button onclick="mathPuzzle()">Math Puzzle</button>
   </div>
   <button onclick="showSection('hub')">⬅ Back</button>
 </div>
@@ -156,7 +161,6 @@ function registerUser(){
       user=res.user;
       coins=0; xp=0; level=1;
       saveStats();
-      showSection('hub');
     })
     .catch(err=>document.getElementById('regMsg').innerText=err.message);
 }
@@ -166,26 +170,30 @@ function loginUser(){
   const email=document.getElementById('loginEmail').value;
   const pass=document.getElementById('loginPass').value;
   auth.signInWithEmailAndPassword(email,pass)
-    .then(res=>{
-      user=res.user;
-      const isAdmin = (user.email==='rameshenterprises@protonmail.com');
-      db.ref('users/'+user.uid).once('value').then(snap=>{
-        const data = snap.val();
-        coins = data?.coins || 0;
-        xp = data?.xp || 0;
-        level = data?.level || 1;
-        updateStats();
-        trackOnline();
-        updateLeaderboard();
-        showSection('hub');
-        if(isAdmin) document.getElementById('adminBtn').style.display='block';
-      });
-    })
     .catch(err=>document.getElementById('loginMsg').innerText=err.message);
 }
 
+// AUTH STATE
+auth.onAuthStateChanged(function(currentUser){
+  if(currentUser){
+    user=currentUser;
+    const isAdmin = (user.email==='rameshenterprises@protonmail.com');
+    db.ref('users/'+user.uid).once('value').then(snap=>{
+      const data = snap.val();
+      coins = data?.coins || 0;
+      xp = data?.xp || 0;
+      level = data?.level || 1;
+      updateStats();
+      trackOnline();
+      updateLeaderboard();
+      showSection('hub');
+      if(isAdmin) document.getElementById('adminBtn').style.display='block';
+    });
+  } else showSection('loginSection');
+});
+
 // LOGOUT
-function logoutUser(){auth.signOut(); showSection('loginSection');}
+function logoutUser(){auth.signOut();}
 
 // SAVE STATS
 function saveStats(){db.ref('users/'+user.uid).set({coins,xp,level,email:user.email}); updateStats();}
@@ -230,6 +238,13 @@ function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! +
 function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
 function clickSpeedTest(){alert("Click OK 5 times quickly"); let start=Date.now(); for(let i=0;i<5;i++) prompt("Click!"); let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s | Coins/XP: "+(50-t)); addCoins(50-t); addXP(50-t);}
 function typingTest(){let txt="Ramesh Fun Hub"; let start=Date.now(); let input=prompt("Type: "+txt); let t=Math.floor((Date.now()-start)/1000); if(input===txt){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect.");}
+
+// NEW 5 GAMES
+function hangman(){const words=["ramesh","fun","hub","javascript"]; const word=words[Math.floor(Math.random()*words.length)]; let guess=""; for(let i=0;i<6;i++){let g=prompt("Guess a letter: "+guess); if(word.includes(g)){guess+=g;} if(guess.length===word.length){alert("You win! +30 Coins +30 XP"); addCoins(30); addXP(30); return;}} alert("Out of tries! Word was "+word);}
+function wordScramble(){const words=["ramesh","fun","hub","code"]; const w=words[Math.floor(Math.random()*words.length)]; const scrambled=w.split('').sort(()=>0.5-Math.random()).join(''); let ans=prompt("Unscramble: "+scrambled); if(ans===w){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! Word was "+w);}
+function diceGuess(){let d=Math.ceil(Math.random()*6); let g=prompt("Guess the dice 1-6"); if(Number(g)===d){alert("Correct! +25 Coins +25 XP"); addCoins(25); addXP(25);} else alert("Wrong! Dice was "+d);}
+function reactionTimeTest(){alert("Click OK when you see 'GO'"); setTimeout(()=>{let start=Date.now(); let input=prompt("GO! Click OK"); let t=(Date.now()-start)/1000; alert("Time: "+t.toFixed(2)+"s | Coins/XP: "+Math.max(10-Math.floor(t*2),1)); addCoins(Math.max(10-Math.floor(t*2),1)); addXP(Math.max(10-Math.floor(t*2),1));},1000+Math.random()*2000);}
+function mathPuzzle(){let a=Math.ceil(Math.random()*10),b=Math.ceil(Math.random()*10); let ans=prompt(`Solve: ${a}+${b}=`); if(Number(ans)===a+b){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! Answer was "+(a+b));}
 
 // GENERATORS
 const genData={business:["Ramesh Corp","Fun Studios"],joke:["Why code? Fun!","JavaScript is fun!"],nickname:["Ramesh123","FunMaster"],poetry:["Roses are red, code is blue","JS makes dreams true"],challenge:["Do 10 pushups","Drink water"]};
