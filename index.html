@@ -137,8 +137,16 @@ input{padding:10px;margin:5px;width:95%;border-radius:6px;border:none;font-size:
 </div>
 
 <script>
-// 🔥 Firebase Config
-const firebaseConfig = { apiKey:"YOUR_API_KEY", authDomain:"YOUR_PROJECT.firebaseapp.com", databaseURL:"https://YOUR_PROJECT-default-rtdb.firebaseio.com", projectId:"YOUR_PROJECT" };
+// 🔥 FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDp_tfDDL5weoyBcs3_OknW0wNLM8PVQrQ",
+  authDomain: "ramesh-fun-hub.firebaseapp.com",
+  databaseURL: "https://ramesh-fun-hub-default-rtdb.firebaseio.com",
+  projectId: "ramesh-fun-hub",
+  storageBucket: "ramesh-fun-hub.firebasestorage.app",
+  messagingSenderId: "670023868444",
+  appId: "1:670023868444:web:7f1f2bc88408fb3ad53fd9"
+};
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
@@ -165,7 +173,7 @@ function initUser(){
     const data=snap.val();
     coins=data?.coins||0; xp=data?.xp||0; level=data?.level||1;
     updateStats(); trackOnline(); updateLeaderboard(); showSection('hub');
-    if(user.email==='admin@example.com') document.getElementById('adminBtn').style.display='block';
+    if(user.email==='rameshenterprises@protonmail.com') document.getElementById('adminBtn').style.display='block';
   });
 }
 
@@ -204,13 +212,13 @@ function updateLeaderboard(){
 // ADMIN
 function wipeLeaderboard(){db.ref('users').remove(); alert("Leaderboard wiped");}
 
-// 🎮 GAMES (all example working)
+// 🎮 GAMES
 function guessNumber(){let n=Math.ceil(Math.random()*10); let ans=prompt("Guess 1-10"); if(Number(ans)===n){alert("Correct! +20 Coins +20 XP"); addCoins(20); addXP(20);} else alert("Wrong! It was "+n);}
 function diceRoll(){let d=Math.ceil(Math.random()*6); alert("You rolled "+d+"! Coins: "+(d*5)+" XP: "+(d*5)); addCoins(d*5); addXP(d*5);}
 function rockPaperScissors(){const c=["Rock","Paper","Scissors"],ai=c[Math.floor(Math.random()*3)]; let p=prompt("Rock, Paper, Scissors?"); let msg="AI chose "+ai+"!"; if(p.toLowerCase()===ai.toLowerCase()) msg+=" Draw!"; else if((p==="Rock"&&ai==="Scissors")||(p==="Paper"&&ai==="Rock")||(p==="Scissors"&&ai==="Paper")){msg+=" You win! +30 Coins +30 XP"; addCoins(30); addXP(30);} else msg+=" You lose!"; alert(msg);}
 function clickSpeedTest(){alert("Click OK fast 5 times!"); let start=Date.now(); for(let i=0;i<5;i++){prompt("Click!");} let t=Math.floor((Date.now()-start)/1000); alert("Time: "+t+"s, XP: "+(50-t)+", Coins: "+(50-t)); addXP(50-t); addCoins(50-t);}
 function typingTest(){let text="Ramesh Fun Hub is awesome!"; let start=Date.now(); let input=prompt("Type:\n"+text); let t=Math.floor((Date.now()-start)/1000); if(input===text){alert("Perfect! +40 Coins +40 XP"); addCoins(40); addXP(40);} else alert("Incorrect typing.");}
-function memorySequence(){let seq=""; for(let i=0;i<5;i++){seq+=Math.floor(Math.random()*9); } let ans=prompt("Remember sequence: "+seq); if(ans===seq){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
+function memorySequence(){let seq=""; for(let i=0;i<5;i++){seq+=Math.floor(Math.random()*9);} let ans=prompt("Remember sequence: "+seq); if(ans===seq){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
 function hangman(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let guess=""; let tries=6; while(tries>0 && guess!==w){let c=prompt("Guess a letter / word: "+guess); if(c===w){guess=w; break;} else{tries--;}} if(guess===w){alert("You win! +50 Coins +50 XP"); addCoins(50); addXP(50);} else alert("You lose!");}
 function wordScramble(){let words=["RAMESH","FUN","HUB"]; let w=words[Math.floor(Math.random()*words.length)]; let scrambled=w.split("").sort(()=>0.5-Math.random()).join(""); let ans=prompt("Unscramble: "+scrambled); if(ans===w){alert("Correct! +30 Coins +30 XP"); addCoins(30); addXP(30);} else alert("Wrong!");}
 function triviaQuiz(){let q=[{q:"Ramesh's favorite color?",a:"Yellow"},{q:"Fun hub created in?",a:"2025"}]; let correct=0; for(let i=0;i<q.length;i++){let ans=prompt(q[i].q); if(ans===q[i].a){correct++; addCoins(20); addXP(20);}} alert("You got "+correct+"/"+q.length);}
