@@ -3,31 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <title>Ramesh Christmas Fun Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="light">
 
-<h1>🎄 Ramesh Christmas Fun Hub 🎄</h1>
+<header>
+  <h1>🎄 Ramesh Christmas Fun Hub 🎄</h1>
 
-<section class="card">
-  <h2>🎅 Naughty or Nice Certificate</h2>
+  <div class="top-controls">
+    <button id="themeToggle">🌙 Dark Mode</button>
+    <button id="clearFavs">⭐ Clear Favourites</button>
+  </div>
 
-  <input id="nameInput" placeholder="Enter your name" />
+  <div id="favouritesBar">
+    <strong>⭐ Favourites:</strong>
+    <span id="favList">None yet</span>
+  </div>
+</header>
+
+<!-- CENTRAL HUB -->
+<section class="hub">
+  <button onclick="openSection('games')">🎮 Games</button>
+  <button onclick="openSection('naughtyNice')">🎅 Naughty or Nice</button>
+  <button onclick="openSection('fortune')">🔮 Fortune Scroll</button>
+  <button onclick="openSection('generators')">🎲 Generators</button>
+</section>
+
+<!-- GAMES -->
+<section id="games" class="section hidden">
+  <h2>🎮 Christmas Games (Google Santa)</h2>
+  <div class="grid">
+    <a onclick="addFav('Snowball Storm')" href="https://santatracker.google.com/snowballstorm.html" target="_blank">❄️ Snowball Storm</a>
+    <a onclick="addFav('Elf Jetpack')" href="https://santatracker.google.com/elfjetpack.html" target="_blank">🧝 Elf Jetpack</a>
+    <a onclick="addFav('Penguin Dash')" href="https://santatracker.google.com/penguindash.html" target="_blank">🐧 Penguin Dash</a>
+    <a onclick="addFav('Wrap Battle')" href="https://santatracker.google.com/wrapbattle.html" target="_blank">🎁 Wrap Battle</a>
+    <a onclick="addFav('Gumballs')" href="https://santatracker.google.com/gumballs.html" target="_blank">🍬 Gumballs</a>
+    <a onclick="addFav('Elf Glider')" href="https://santatracker.google.com/elfglider.html" target="_blank">🪂 Elf Glider</a>
+    <a onclick="addFav('Present Bounce')" href="https://santatracker.google.com/bounce.html" target="_blank">🎄 Present Bounce</a>
+    <a onclick="addFav('Speed Sketch')" href="https://santatracker.google.com/speedsketch.html" target="_blank">🎨 Speed Sketch</a>
+    <a onclick="addFav('Code Lab')" href="https://santatracker.google.com/codelab.html" target="_blank">💻 Code Lab</a>
+    <a onclick="addFav('Santa Search')" href="https://santatracker.google.com/hiddenelf.html" target="_blank">🔍 Santa Search</a>
+  </div>
+</section>
+
+<!-- NAUGHTY OR NICE -->
+<section id="naughtyNice" class="section hidden">
+  <h2>🎅 Naughty or Nice (Indian Theme)</h2>
+
+  <input id="userName" placeholder="Enter your name">
 
   <div id="questions"></div>
 
-  <button onclick="generateResult()">🎁 Get My Certificate</button>
+  <button onclick="checkNice()">🎁 Get Result</button>
+  <p id="nnResult"></p>
 </section>
 
-<section class="card">
+<!-- FORTUNE -->
+<section id="fortune" class="section hidden">
   <h2>🔮 Christmas Fortune Scroll</h2>
-  <div id="scroll">
-    <p id="fortuneText">Click the button to reveal your fortune…</p>
+  <div class="scroll" id="fortuneText">
+    Tap below to reveal your fortune…
   </div>
   <button onclick="newFortune()">✨ Reveal Fortune</button>
 </section>
 
-<canvas id="certificateCanvas" width="900" height="600" class="hidden"></canvas>
+<!-- GENERATORS -->
+<section id="generators" class="section hidden">
+  <h2>🎲 Fun Generators</h2>
+
+  <button onclick="genJoke()">😂 Joke Generator</button>
+  <p id="jokeOut"></p>
+
+  <button onclick="genFact()">📘 Random Christmas Fact</button>
+  <p id="factOut"></p>
+
+  <button onclick="genName()">🎄 Christmas Nickname</button>
+  <p id="nameOut"></p>
+</section>
+
+<footer>
+  Made with 💡 & 🤖 by Ramesh Enterprises
+</footer>
 
 <script src="app.js"></script>
 </body>
