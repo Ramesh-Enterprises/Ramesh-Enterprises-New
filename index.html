@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="light">
 
 <div id="loader">
@@ -53,30 +52,33 @@
 </header>
 
 <section class="hub">
-  <button onclick="openSection('games')">🎮 Games</button>
-  <button onclick="openSection('naughty')">🎅 Naughty or Nice</button>
-  <button onclick="openSection('fortune')">🔮 Fortune</button>
-  <button onclick="openSection('generators')">🎲 Generators</button>
+  <div class="card" onclick="openSection('games')">🎮 Games<br><small>Play fun Christmas games</small></div>
+  <div class="card" onclick="openSection('naughty')">🎅 Naughty or Nice<br><small>Check your Christmas behavior</small></div>
+  <div class="card" onclick="openSection('fortune')">🔮 Fortune Scroll<br><small>Reveal your holiday fortune</small></div>
+  <div class="card" onclick="openSection('generators')">🎲 Generators<br><small>Create jokes, codes & more</small></div>
+</section>
+
+<!-- Mini Stats -->
+<section class="mini-panels">
+  <div>⏱️ Play Time: <span id="playTimer">0s</span></div>
+  <div>Recently Played: <span id="recentPlay">None</span></div>
+  <div>🎁 Lucky Christmas Number: <span id="luckyNum">Not generated</span></div>
 </section>
 
 <!-- GAMES -->
 <section id="games" class="section hidden">
   <h2>🎮 Games</h2>
-  <p id="playTimer">⏱️ Play Time: 0s</p>
-  <p id="recentPlay">Recently Played: None</p>
-
   <div class="grid">
-    <a onclick="playGame('Snowball Storm')" target="_blank" href="https://santatracker.google.com/snowballstorm.html">❄️ Snowball Storm</a>
-    <a onclick="playGame('Elf Jetpack')" target="_blank" href="https://santatracker.google.com/elfjetpack.html">🧝 Elf Jetpack</a>
-    <a onclick="playGame('Penguin Dash')" target="_blank" href="https://santatracker.google.com/penguindash.html">🐧 Penguin Dash</a>
-    <a onclick="playGame('Wrap Battle')" target="_blank" href="https://santatracker.google.com/wrapbattle.html">🎁 Wrap Battle</a>
+    <a onclick="playGame('Snowball Storm')" target="_blank" href="https://santatracker.google.com/snowballstorm.html">❄️ Snowball Storm<br><small>Throw snowballs at friends</small></a>
+    <a onclick="playGame('Elf Jetpack')" target="_blank" href="https://santatracker.google.com/elfjetpack.html">🧝 Elf Jetpack<br><small>Fly through obstacles</small></a>
+    <a onclick="playGame('Penguin Dash')" target="_blank" href="https://santatracker.google.com/penguindash.html">🐧 Penguin Dash<br><small>Race as a penguin</small></a>
+    <a onclick="playGame('Wrap Battle')" target="_blank" href="https://santatracker.google.com/wrapbattle.html">🎁 Wrap Battle<br><small>Wrap gifts fast</small></a>
   </div>
 </section>
 
 <!-- NAUGHTY OR NICE -->
 <section id="naughty" class="section hidden">
   <h2>🎅 Naughty or Nice</h2>
-
   <input id="userName" placeholder="Your name">
 
   <label><input type="checkbox" id="sigSanta" checked> Santa Signature</label>
@@ -95,7 +97,6 @@
   <h2>🔮 Fortune Scroll</h2>
   <div class="scroll" id="fortuneText">Tap below</div>
   <button onclick="newFortune()">✨ Reveal</button>
-  <p id="luckyNum"></p>
 </section>
 
 <!-- GENERATORS -->
