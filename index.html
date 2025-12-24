@@ -1,85 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Ramesh Christmas Fun Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Ramesh Christmas Fun Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body class="light">
 
-<header>
+<div id="loader">
+  <div class="spinner"></div>
+  <p>Loading Christmas Magic… 🎄</p>
+</div>
+
+<div id="offlineMsg" class="hidden">
+  📴 You are offline — enjoy the Christmas fun anyway!
+</div>
+
+<header class="lights">
+  <button id="homeBtn" onclick="goHome()">🏠 Home</button>
   <h1>🎄 Ramesh Christmas Fun Hub 🎄</h1>
 
   <div class="top-controls">
-    <button id="themeToggle">🌙 Dark Mode</button>
-    <button id="clearFavs">⭐ Clear Favourites</button>
+    <button id="themeToggle">🌙</button>
+    <button onclick="openSection('favs')">⭐ Favourites</button>
   </div>
 
-  <div id="favouritesBar">
-    <strong>⭐ Favourites:</strong>
-    <span id="favList">None yet</span>
+  <div class="custom-controls">
+    🎨 Background:
+    <select id="bgSelect">
+      <option value="default">Default</option>
+      <option value="night">Night Sky</option>
+      <option value="snow">Snow White</option>
+    </select>
+
+    ❄️ Snow Emoji:
+    <select id="snowEmoji">
+      <option>❄️</option>
+      <option>✨</option>
+      <option>⭐</option>
+      <option>🌨️</option>
+    </select>
+
+    🌬️ Wind:
+    <select id="windDir">
+      <option value="down">Down</option>
+      <option value="left">Left</option>
+      <option value="right">Right</option>
+    </select>
   </div>
 </header>
 
-<!-- CENTRAL HUB -->
 <section class="hub">
   <button onclick="openSection('games')">🎮 Games</button>
-  <button onclick="openSection('naughtyNice')">🎅 Naughty or Nice</button>
-  <button onclick="openSection('fortune')">🔮 Fortune Scroll</button>
+  <button onclick="openSection('naughty')">🎅 Naughty or Nice</button>
+  <button onclick="openSection('fortune')">🔮 Fortune</button>
   <button onclick="openSection('generators')">🎲 Generators</button>
 </section>
 
 <!-- GAMES -->
 <section id="games" class="section hidden">
-  <h2>🎮 Christmas Games (Google Santa)</h2>
+  <h2>🎮 Games</h2>
+  <p id="playTimer">⏱️ Play Time: 0s</p>
+  <p id="recentPlay">Recently Played: None</p>
+
   <div class="grid">
-    <a onclick="addFav('Snowball Storm')" href="https://santatracker.google.com/snowballstorm.html" target="_blank">❄️ Snowball Storm</a>
-    <a onclick="addFav('Elf Jetpack')" href="https://santatracker.google.com/elfjetpack.html" target="_blank">🧝 Elf Jetpack</a>
-    <a onclick="addFav('Penguin Dash')" href="https://santatracker.google.com/penguindash.html" target="_blank">🐧 Penguin Dash</a>
-    <a onclick="addFav('Wrap Battle')" href="https://santatracker.google.com/wrapbattle.html" target="_blank">🎁 Wrap Battle</a>
-    <a onclick="addFav('Gumballs')" href="https://santatracker.google.com/gumballs.html" target="_blank">🍬 Gumballs</a>
-    <a onclick="addFav('Elf Glider')" href="https://santatracker.google.com/elfglider.html" target="_blank">🪂 Elf Glider</a>
-    <a onclick="addFav('Present Bounce')" href="https://santatracker.google.com/bounce.html" target="_blank">🎄 Present Bounce</a>
-    <a onclick="addFav('Speed Sketch')" href="https://santatracker.google.com/speedsketch.html" target="_blank">🎨 Speed Sketch</a>
-    <a onclick="addFav('Code Lab')" href="https://santatracker.google.com/codelab.html" target="_blank">💻 Code Lab</a>
-    <a onclick="addFav('Santa Search')" href="https://santatracker.google.com/hiddenelf.html" target="_blank">🔍 Santa Search</a>
+    <a onclick="playGame('Snowball Storm')" target="_blank" href="https://santatracker.google.com/snowballstorm.html">❄️ Snowball Storm</a>
+    <a onclick="playGame('Elf Jetpack')" target="_blank" href="https://santatracker.google.com/elfjetpack.html">🧝 Elf Jetpack</a>
+    <a onclick="playGame('Penguin Dash')" target="_blank" href="https://santatracker.google.com/penguindash.html">🐧 Penguin Dash</a>
+    <a onclick="playGame('Wrap Battle')" target="_blank" href="https://santatracker.google.com/wrapbattle.html">🎁 Wrap Battle</a>
   </div>
 </section>
 
 <!-- NAUGHTY OR NICE -->
-<section id="naughtyNice" class="section hidden">
-  <h2>🎅 Naughty or Nice (Indian Theme)</h2>
+<section id="naughty" class="section hidden">
+  <h2>🎅 Naughty or Nice</h2>
 
-  <input id="userName" placeholder="Enter your name">
+  <input id="userName" placeholder="Your name">
+
+  <label><input type="checkbox" id="sigSanta" checked> Santa Signature</label>
+  <label><input type="checkbox" id="sigRamesh" checked> Ramesh Signature</label>
 
   <div id="questions"></div>
-
-  <button onclick="checkNice()">🎁 Get Result</button>
+  <button onclick="checkNice()">🎁 Check</button>
   <p id="nnResult"></p>
+  <button onclick="downloadCert()">📜 Download Certificate</button>
+
+  <canvas id="certCanvas" width="900" height="600"></canvas>
 </section>
 
 <!-- FORTUNE -->
 <section id="fortune" class="section hidden">
-  <h2>🔮 Christmas Fortune Scroll</h2>
-  <div class="scroll" id="fortuneText">
-    Tap below to reveal your fortune…
-  </div>
-  <button onclick="newFortune()">✨ Reveal Fortune</button>
+  <h2>🔮 Fortune Scroll</h2>
+  <div class="scroll" id="fortuneText">Tap below</div>
+  <button onclick="newFortune()">✨ Reveal</button>
+  <p id="luckyNum"></p>
 </section>
 
 <!-- GENERATORS -->
 <section id="generators" class="section hidden">
-  <h2>🎲 Fun Generators</h2>
+  <h2>🎲 Generators</h2>
+  <button onclick="genCode()">🔐 Code Generator</button>
+  <p id="codeOut"></p>
+</section>
 
-  <button onclick="genJoke()">😂 Joke Generator</button>
-  <p id="jokeOut"></p>
-
-  <button onclick="genFact()">📘 Random Christmas Fact</button>
-  <p id="factOut"></p>
-
-  <button onclick="genName()">🎄 Christmas Nickname</button>
-  <p id="nameOut"></p>
+<!-- FAVOURITES -->
+<section id="favs" class="section hidden">
+  <h2>⭐ Favourites</h2>
+  <ul id="favList"></ul>
 </section>
 
 <footer>
