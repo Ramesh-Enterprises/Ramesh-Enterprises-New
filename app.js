@@ -1,108 +1,104 @@
-// ❄️ Snowfall
-for(let i=0;i<40;i++){
-  const s=document.createElement("div");
-  s.textContent="❄️";
-  s.style.position="fixed";
-  s.style.left=Math.random()*100+"vw";
-  s.style.top="-10px";
-  s.style.fontSize=12+Math.random()*20+"px";
-  s.style.animation=`fall ${5+Math.random()*10}s linear infinite`;
-  document.body.appendChild(s);
+// HUB NAV
+function openSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
 }
 
-const style=document.createElement("style");
-style.innerHTML=`
-@keyframes fall{
-  to{transform:translateY(110vh);}
-}`;
-document.head.appendChild(style);
+// DARK / LIGHT
+const toggle=document.getElementById("themeToggle");
+toggle.onclick=()=>{
+  document.body.classList.toggle("dark");
+  document.body.classList.toggle("light");
+  toggle.textContent=document.body.classList.contains("dark")
+    ?"☀️ Light Mode":"🌙 Dark Mode";
+};
 
-// 🎅 Questions
-const questionsData=[
- "Did you help someone this year?",
- "Did you share your snacks?",
- "Were you kind online?",
- "Did you say thank you often?",
- "Did you avoid cheating?",
- "Did you help at home?",
- "Did you forgive someone?",
- "Did you donate or help?",
+// FAVOURITES
+let favs=JSON.parse(localStorage.getItem("favs")||"[]");
+function addFav(name){
+  if(!favs.includes(name)){
+    favs.push(name);
+    localStorage.setItem("favs",JSON.stringify(favs));
+    renderFavs();
+  }
+}
+function renderFavs(){
+  document.getElementById("favList").textContent=
+    favs.length?favs.join(", "):"None yet";
+}
+renderFavs();
+document.getElementById("clearFavs").onclick=()=>{
+  favs=[];
+  localStorage.removeItem("favs");
+  renderFavs();
+};
+
+// NAUGHTY OR NICE (Indian themed)
+const qData=[
  "Did you respect elders?",
- "Did you stay honest?"
+ "Did you help at home?",
+ "Did you waste food?",
+ "Did you study honestly?",
+ "Did you help friends?",
+ "Did you avoid cheating?",
+ "Did you say thank you?",
+ "Did you help parents?",
+ "Did you stay kind online?",
+ "Did you avoid fights?"
 ];
-
 const qDiv=document.getElementById("questions");
-questionsData.forEach((q,i)=>{
+qData.forEach((q,i)=>{
   qDiv.innerHTML+=`
-  <div class="question">
-    ${i+1}. ${q}<br>
+  <div>
+    ${q}<br>
     <label><input type="radio" name="q${i}" value="1"> Yes</label>
     <label><input type="radio" name="q${i}" value="0"> No</label>
   </div>`;
 });
-
-// 🎁 Certificate Logic
-function generateResult(){
-  const name=document.getElementById("nameInput").value.trim();
-  if(!name){alert("Enter your name");return;}
-
+function checkNice(){
   let score=0;
   for(let i=0;i<10;i++){
     const a=document.querySelector(`input[name="q${i}"]:checked`);
     if(a) score+=Number(a.value);
   }
-
-  const result=score>=6?"NICE 🎄":"NAUGHTY 😈";
-  drawCertificate(name,result);
+  document.getElementById("nnResult").textContent=
+    score>=6?"🎄 NICE – Santa approves!":"😈 NAUGHTY – Try better next year!";
 }
 
-// 🖼️ Certificate Canvas
-function drawCertificate(name,result){
-  const c=document.getElementById("certificateCanvas");
-  const ctx=c.getContext("2d");
-  c.classList.remove("hidden");
-
-  ctx.fillStyle="#fff8dc";
-  ctx.fillRect(0,0,c.width,c.height);
-
-  ctx.fillStyle="#b30000";
-  ctx.font="48px serif";
-  ctx.fillText("🎄 Christmas Certificate 🎄",180,100);
-
-  ctx.fillStyle="#000";
-  ctx.font="32px serif";
-  ctx.fillText("This certifies that",330,220);
-
-  ctx.font="42px serif";
-  ctx.fillText(name,350,280);
-
-  ctx.font="32px serif";
-  ctx.fillText("has been",380,340);
-
-  ctx.font="50px serif";
-  ctx.fillText(result,320,410);
-
-  ctx.font="20px serif";
-  ctx.fillText("— Ramesh Christmas Fun Hub",280,520);
-
-  const link=document.createElement("a");
-  link.download=`${name}_Christmas_Certificate.png`;
-  link.href=c.toDataURL();
-  link.click();
-}
-
-// 🔮 Fortune Scroll
+// FORTUNE
 const fortunes=[
- "A joyful surprise awaits you before Christmas 🎁",
- "Kindness you give will return doubled ❄️",
- "A new friendship is coming 🎄",
- "Your holiday season will be peaceful ✨",
- "Good news arrives soon 🎅",
- "Laughter will fill your days 🎶",
- "You will succeed in something important ⭐"
+ "A surprise guest will bring joy 🎁",
+ "Good news is coming from family",
+ "Hard work will pay off soon",
+ "A happy moment awaits you",
+ "You will make someone smile today"
 ];
-
 function newFortune(){
   document.getElementById("fortuneText").textContent=
     fortunes[Math.floor(Math.random()*fortunes.length)];
+}
+
+// GENERATORS
+function genJoke(){
+  const j=[
+    "Why did Santa go to school? To improve his elf-esteem!",
+    "What do elves learn in school? The elf-abet!",
+    "Why was the snowman smiling? He saw the snowblower!"
+  ];
+  document.getElementById("jokeOut").textContent=
+    j[Math.floor(Math.random()*j.length)];
+}
+function genFact(){
+  const f=[
+    "Christmas is celebrated by billions worldwide.",
+    "Santa Claus is based on St. Nicholas.",
+    "India celebrates Christmas with regional traditions."
+  ];
+  document.getElementById("factOut").textContent=
+    f[Math.floor(Math.random()*f.length)];
+}
+function genName(){
+  const n=["Jolly","Snowy","Festive","Cheerful","Twinkly"];
+  document.getElementById("nameOut").textContent=
+    n[Math.floor(Math.random()*n.length)]+" "+(Math.random()*100|0);
 }
