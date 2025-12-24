@@ -1,0 +1,60 @@
+body{
+  margin:0;
+  font-family: 'Comic Sans MS', system-ui;
+  background: linear-gradient(#0b3d91,#031a33);
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+}
+
+h1{
+  margin:20px;
+}
+
+.card{
+  background: rgba(255,255,255,0.95);
+  color:#111;
+  padding:20px;
+  margin:20px auto;
+  max-width:500px;
+  border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+input{
+  padding:10px;
+  width:80%;
+  margin-bottom:15px;
+  font-size:16px;
+}
+
+.question{
+  text-align:left;
+  margin:8px 0;
+}
+
+button{
+  padding:12px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:12px;
+  background:#e63946;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
+
+#scroll{
+  background:#f4e4bc;
+  color:#4a2c2a;
+  padding:20px;
+  border-radius:12px;
+  font-style:italic;
+}
+
+.hidden{
+  display:none;
+}
