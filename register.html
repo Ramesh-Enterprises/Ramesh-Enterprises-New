@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register – Ramesh Fun Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h1>✨ Join Ramesh Fun Hub</h1>
+  <h2>Create Account</h2>
+
+  <input id="regUsername" placeholder="Username">
+  <input id="regEmail" placeholder="Email">
+  <input id="regPassword" type="password" placeholder="Password">
+
+  <button onclick="register()">Register</button>
+
+  <p>
+    Already have an account?
+    <a href="login.html">Login</a>
+  </p>
+
+  <p id="authError"></p>
+</div>
+
+<script type="module" src="firebase.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
