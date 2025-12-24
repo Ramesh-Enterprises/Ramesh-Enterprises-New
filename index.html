@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>🎄 Ramesh Christmas Fun Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg1:#0b3d2e;
+  --bg2:#145a32;
+  --card:rgba(0,0,0,.35);
+  --header:#b30000;
+}
+body.night{
+  --bg1:#050b18;
+  --bg2:#0a1a33;
+  --card:rgba(0,0,0,.6);
+  --header:#1e2a4a;
+}
+body{
+  margin:0;
+  font-family:"Comic Sans MS",cursive;
+  background:linear-gradient(var(--bg1),var(--bg2));
+  color:white;
+  text-align:center;
+  overflow-x:hidden;
+  transition:.4s;
+}
+header{
+  background:var(--header);
+  padding:20px;
+  font-size:2em;
+  position:relative;
+  box-shadow:0 4px 10px rgba(0,0,0,.4);
+}
+.top-btn{
+  position:absolute;
+  top:15px;
+  padding:8px 14px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+}
+#musicBtn{right:15px;}
+#modeBtn{right:120px;}
+
+.categories{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin:15px;
+}
+button{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  background:#ff3333;
+  color:white;
+  font-size:1em;
+  cursor:pointer;
+}
+button:hover{background:#ff6666;}
+
+#panel{
+  max-width:800px;
+  margin:20px auto;
+  background:var(--card);
+  padding:20px;
+  border-radius:15px;
+}
+.game-links button{
+  display:block;
+  width:100%;
+  margin:6px 0;
+}
+
+footer{margin:30px;opacity:.85}
+
+/* Snow */
+.snow{
+  position:fixed;
+  top:-10px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🎄 Ramesh Christmas Fun Hub 🎁
+<button class="top-btn" id="modeBtn" onclick="toggleMode()">🌙 Night</button>
+<button class="top-btn" id="musicBtn" onclick="toggleMusic()">🔇 Music</button>
+</header>
+
+<div class="categories">
+  <button onclick="showCategory('google')">🎅 Google Santa</button>
+  <button onclick="showCategory('action')">⚡ Action</button>
+  <button onclick="showCategory('puzzle')">🧩 Puzzle</button>
+  <button onclick="showCategory('creative')">🎨 Creative</button>
+  <button onclick="showCategory('classic')">🎮 Classic</button>
+</div>
+
+<div id="panel">
+  <h2>🎄 Welcome!</h2>
+  <p>Turn on music, switch modes & choose a category 🎁</p>
+</div>
+
+<footer>Made with 🎄 & ❤️ by Ramesh</footer>
+
+<audio id="bgMusic" loop>
+<source src="https://cdn.pixabay.com/audio/2022/11/21/audio_4f9edc67c7.mp3">
+</audio>
+
+<script>
+/* ❄ SNOW */
+for(let i=0;i<80;i++){
+  const s=document.createElement("div");
+  s.className="snow";
+  s.innerText="❄";
+  s.style.left=Math.random()*100+"vw";
+  s.style.fontSize=10+Math.random()*20+"px";
+  s.style.animationDuration=5+Math.random()*6+"s";
+  document.body.appendChild(s);
+}
+
+/* 🎶 MUSIC */
+let playing=false;
+const music=document.getElementById("bgMusic");
+function toggleMusic(){
+  if(!playing){music.play();musicBtn.innerText="🔊 Music";playing=true;}
+  else{music.pause();musicBtn.innerText="🔇 Music";playing=false;}
+}
+
+/* 🌙 MODE */
+let night=false;
+function toggleMode(){
+  night=!night;
+  document.body.classList.toggle("night");
+  modeBtn.innerText=night?"☀ Day":"🌙 Night";
+}
+
+/* 🎮 GAMES */
+const games={
+google:[
+["Snowball Storm","https://santatracker.google.com/snowballstorm.html"],
+["Elf Jetpack","https://santatracker.google.com/elfjetpack.html"],
+["Penguin Dash","https://santatracker.google.com/penguindash.html"],
+["Wrap Battle","https://santatracker.google.com/wrapbattle.html"],
+["Santa Selfie","https://santatracker.google.com/santaselfie.html"],
+["Gumballs","https://santatracker.google.com/gumballs.html"],
+["Elf Glider","https://santatracker.google.com/elfglider.html"],
+["Present Bounce","https://santatracker.google.com/bounce.html"],
+["Speed Sketch","https://santatracker.google.com/speedsketch.html"],
+["Code Lab","https://santatracker.google.com/codelab.html"]
+],
+action:[
+["Snow Rider 3D","https://snowrider3d.com/"],
+["Moto X3M Winter","https://moto-x3m.org/moto-x3m-winter"],
+["Penguin Dash","https://santatracker.google.com/penguindash.html"],
+["Reindeer Runner","https://www.santatracker.com/games/reindeer-runner/"],
+["Santa Jump","https://www.mathplayground.com/santa_jump.html"]
+],
+puzzle:[
+["Christmas Mahjong","https://www.mahjong.com/christmas-mahjong.html"],
+["Holiday Connect 4","https://www.solitaire.org/christmas-connect/"],
+["Winter Solitaire","https://www.solitaire.org/winter-solitaire/"],
+["Sugar Sugar Xmas","https://www.hoodamath.com/games/sugarsugarchristmas.html"],
+["Christmas Word Search","https://www.wordsearch.com/holiday/christmas"]
+],
+creative:[
+["Blob Opera","https://artsandculture.google.com/experiment/blob-opera/AAHWrq360NcGbw"],
+["Make Christmas Tree","https://www.abcya.com/games/make_a_christmas_tree"],
+["Gingerbread House","https://www.abcya.com/games/make_a_gingerbread_house"],
+["Santa Selfie","https://santatracker.google.com/santaselfie.html"]
+],
+classic:[
+["Winterbells","https://www.ferryhalim.com/orisinal/g3/bells.htm"],
+["Santa Chimney Trouble","https://www.roomrecess.com/mobile/SantasChimney/play.html"],
+["Deep Freeze","http://www.nitrome.com/games/deepfreeze/"],
+["Sleigh Shot","https://www.primarygames.com/holidays/christmas/games/sleighshot/"],
+["NORAD Arcade","https://www.noradsanta.org/en/arcade"]
+]
+};
+
+function showCategory(cat){
+  let html=`<h2>${cat.toUpperCase()} Games</h2><div class="game-links">`;
+  games[cat].forEach(g=>{
+    html+=`<button onclick="window.open('${g[1]}','_blank')">${g[0]}</button>`;
+  });
+  html+="</div>";
+  panel.innerHTML=html;
+}
+</script>
+
+</body>
+</html>
