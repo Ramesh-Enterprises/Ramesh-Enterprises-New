@@ -3,33 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <title>Ramesh Fun Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-  <h1>🔥 Ramesh Fun Hub</h1>
-  <button onclick="logout()">Logout</button>
+<!-- TOP BAR -->
+<header class="top-bar">
+  <h1>🎮 Ramesh Fun Hub</h1>
+  <button id="logoutBtn">🚪 Logout</button>
 </header>
 
-<div id="stats"></div>
+<!-- USER STATS -->
+<section id="stats" class="stats-box">
+  Loading stats...
+</section>
 
-<div class="hub-buttons">
-  <button onclick="openPanel('games')">🎮 Games</button>
-  <button onclick="openPanel('generators')">⚙️ Generators</button>
-  <button onclick="openPanel('ai')">🤖 AI</button>
-  <button onclick="openPanel('leaderboard')">🏆 Leaderboard</button>
-  <button onclick="openPanel('profile')">👤 Profile</button>
-  <button id="adminBtn" onclick="openPanel('admin')" style="display:none">🛠 Admin</button>
-</div>
+<!-- HUB BUTTONS -->
+<section class="hub-buttons">
+  <button data-panel="games">🎮 Games</button>
+  <button data-panel="leaderboard">🏆 Leaderboard</button>
+  <button data-panel="achievements">🏆 Achievements</button>
+  <button id="adminBtn" style="display:none;">🛠 Admin</button>
+</section>
 
-<div id="panel"></div>
+<!-- MAIN PANEL -->
+<main id="panel" class="panel-box">
+  <h2>Welcome to Ramesh Fun Hub 🎉</h2>
+  <p>Select a section above to begin.</p>
+</main>
 
-<footer>
-Made with 💡 & 🤖 by Ramesh Enterprises
+<!-- FOOTER -->
+<footer class="footer">
+  Made with 💡 & 🤖 by <b>Ramesh Enterprises</b>
 </footer>
 
+<!-- SCRIPTS -->
 <script type="module" src="firebase.js"></script>
 <script type="module" src="app.js"></script>
+
 </body>
 </html>
