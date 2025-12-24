@@ -7,147 +7,110 @@
 
 <style>
 :root{
-  --bg1:#0b3d2e;
-  --bg2:#145a32;
-  --card:rgba(0,0,0,.35);
-  --header:#b30000;
+  --bg1:#0b3d2e; --bg2:#145a32; --card:rgba(0,0,0,.35); --header:#b30000;
 }
 body.night{
-  --bg1:#050b18;
-  --bg2:#0a1a33;
-  --card:rgba(0,0,0,.6);
-  --header:#1e2a4a;
+  --bg1:#050b18; --bg2:#0a1a33; --card:rgba(0,0,0,.6); --header:#1e2a4a;
 }
 body{
-  margin:0;
-  font-family:"Comic Sans MS",cursive;
+  margin:0;font-family:"Comic Sans MS",cursive;
   background:linear-gradient(var(--bg1),var(--bg2));
-  color:white;
-  text-align:center;
-  overflow-x:hidden;
-  transition:.4s;
+  color:white;text-align:center;transition:.4s;overflow-x:hidden;
 }
 header{
-  background:var(--header);
-  padding:20px;
-  font-size:2em;
-  position:relative;
-  box-shadow:0 4px 10px rgba(0,0,0,.4);
+  background:var(--header);padding:20px;font-size:2em;
+  display:flex;justify-content:space-between;align-items:center;
 }
-.top-btn{
-  position:absolute;
-  top:15px;
-  padding:8px 14px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-}
-#musicBtn{right:15px;}
-#modeBtn{right:120px;}
-
-.categories{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:10px;
-  margin:15px;
+.header-btns button{
+  margin-left:8px;padding:8px 14px;border:none;border-radius:10px;
 }
 button{
-  padding:12px 18px;
-  border:none;
-  border-radius:12px;
-  background:#ff3333;
-  color:white;
-  font-size:1em;
-  cursor:pointer;
+  padding:12px 18px;border:none;border-radius:14px;
+  background:#ff3333;color:white;font-size:1em;cursor:pointer;
 }
-button:hover{background:#ff6666;}
-
+button:hover{background:#ff6666}
 #panel{
-  max-width:800px;
-  margin:20px auto;
-  background:var(--card);
-  padding:20px;
-  border-radius:15px;
+  max-width:900px;margin:20px auto;background:var(--card);
+  padding:20px;border-radius:18px;
 }
-.game-links button{
-  display:block;
-  width:100%;
-  margin:6px 0;
-}
-
 footer{margin:30px;opacity:.85}
-
-/* Snow */
-.snow{
-  position:fixed;
-  top:-10px;
-  animation:fall linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(110vh);}
-}
+.snow{position:fixed;top:-10px;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh)}}
+canvas{background:white;border-radius:12px}
+input[type=range]{width:200px}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
 <header>
-🎄 Ramesh Christmas Fun Hub 🎁
-<button class="top-btn" id="modeBtn" onclick="toggleMode()">🌙 Night</button>
-<button class="top-btn" id="musicBtn" onclick="toggleMusic()">🔇 Music</button>
+  🎄 Ramesh Christmas Fun Hub
+  <div class="header-btns">
+    <button onclick="toggleMode()" id="modeBtn">🌙</button>
+    <button onclick="toggleMusic()" id="musicBtn">🔇</button>
+  </div>
 </header>
 
-<div class="categories">
-  <button onclick="showCategory('google')">🎅 Google Santa</button>
-  <button onclick="showCategory('action')">⚡ Action</button>
-  <button onclick="showCategory('puzzle')">🧩 Puzzle</button>
-  <button onclick="showCategory('creative')">🎨 Creative</button>
-  <button onclick="showCategory('classic')">🎮 Classic</button>
-</div>
-
-<div id="panel">
-  <h2>🎄 Welcome!</h2>
-  <p>Turn on music, switch modes & choose a category 🎁</p>
-</div>
+<div id="panel"></div>
 
 <footer>Made with 🎄 & ❤️ by Ramesh</footer>
 
-<audio id="bgMusic" loop>
-<source src="https://cdn.pixabay.com/audio/2022/11/21/audio_4f9edc67c7.mp3">
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2022/11/21/audio_4f9edc67c7.mp3">
 </audio>
 
 <script>
-/* ❄ SNOW */
-for(let i=0;i<80;i++){
-  const s=document.createElement("div");
-  s.className="snow";
-  s.innerText="❄";
-  s.style.left=Math.random()*100+"vw";
-  s.style.fontSize=10+Math.random()*20+"px";
-  s.style.animationDuration=5+Math.random()*6+"s";
-  document.body.appendChild(s);
-}
-
-/* 🎶 MUSIC */
-let playing=false;
+/* ========= BASIC SETUP ========= */
+const panel=document.getElementById("panel");
 const music=document.getElementById("bgMusic");
+music.volume=0.5;
+let playing=false, unlocked=false;
+document.body.addEventListener("click",()=>{
+  if(!unlocked){music.play().then(()=>music.pause());unlocked=true;}
+},{once:true});
+
 function toggleMusic(){
-  if(!playing){music.play();musicBtn.innerText="🔊 Music";playing=true;}
-  else{music.pause();musicBtn.innerText="🔇 Music";playing=false;}
+  if(!unlocked)return;
+  playing=!playing;
+  playing?music.play():music.pause();
+  musicBtn.textContent=playing?"🔊":"🔇";
 }
-
-/* 🌙 MODE */
-let night=false;
 function toggleMode(){
-  night=!night;
   document.body.classList.toggle("night");
-  modeBtn.innerText=night?"☀ Day":"🌙 Night";
 }
 
-/* 🎮 GAMES */
-const games={
-google:[
+/* ========= SNOW ========= */
+let snowCount=60, snowEmoji="❄", snows=[];
+function makeSnow(){
+  snows.forEach(s=>s.remove()); snows=[];
+  for(let i=0;i<snowCount;i++){
+    const s=document.createElement("div");
+    s.className="snow"; s.textContent=snowEmoji;
+    s.style.left=Math.random()*100+"vw";
+    s.style.fontSize=10+Math.random()*20+"px";
+    s.style.animationDuration=5+Math.random()*6+"s";
+    document.body.appendChild(s); snows.push(s);
+  }
+}
+makeSnow();
+
+/* ========= NAV ========= */
+function home(){
+panel.innerHTML=`
+<h2>🎄 Welcome!</h2>
+<button onclick="showGames()">🎮 Games</button>
+<button onclick="naughtyNice()">🎅 Naughty or Nice</button>
+<button onclick="facts()">🎲 Facts</button>
+<button onclick="jokes()">😂 Jokes</button>
+<button onclick="extras()">✨ Extras</button>
+<button onclick="favourites()">⭐ Favourites</button>
+`;
+}
+home();
+
+/* ========= GAMES ========= */
+const games=[
 ["Snowball Storm","https://santatracker.google.com/snowballstorm.html"],
 ["Elf Jetpack","https://santatracker.google.com/elfjetpack.html"],
 ["Penguin Dash","https://santatracker.google.com/penguindash.html"],
@@ -158,44 +121,99 @@ google:[
 ["Present Bounce","https://santatracker.google.com/bounce.html"],
 ["Speed Sketch","https://santatracker.google.com/speedsketch.html"],
 ["Code Lab","https://santatracker.google.com/codelab.html"]
-],
-action:[
-["Snow Rider 3D","https://snowrider3d.com/"],
-["Moto X3M Winter","https://moto-x3m.org/moto-x3m-winter"],
-["Penguin Dash","https://santatracker.google.com/penguindash.html"],
-["Reindeer Runner","https://www.santatracker.com/games/reindeer-runner/"],
-["Santa Jump","https://www.mathplayground.com/santa_jump.html"]
-],
-puzzle:[
-["Christmas Mahjong","https://www.mahjong.com/christmas-mahjong.html"],
-["Holiday Connect 4","https://www.solitaire.org/christmas-connect/"],
-["Winter Solitaire","https://www.solitaire.org/winter-solitaire/"],
-["Sugar Sugar Xmas","https://www.hoodamath.com/games/sugarsugarchristmas.html"],
-["Christmas Word Search","https://www.wordsearch.com/holiday/christmas"]
-],
-creative:[
-["Blob Opera","https://artsandculture.google.com/experiment/blob-opera/AAHWrq360NcGbw"],
-["Make Christmas Tree","https://www.abcya.com/games/make_a_christmas_tree"],
-["Gingerbread House","https://www.abcya.com/games/make_a_gingerbread_house"],
-["Santa Selfie","https://santatracker.google.com/santaselfie.html"]
-],
-classic:[
-["Winterbells","https://www.ferryhalim.com/orisinal/g3/bells.htm"],
-["Santa Chimney Trouble","https://www.roomrecess.com/mobile/SantasChimney/play.html"],
-["Deep Freeze","http://www.nitrome.com/games/deepfreeze/"],
-["Sleigh Shot","https://www.primarygames.com/holidays/christmas/games/sleighshot/"],
-["NORAD Arcade","https://www.noradsanta.org/en/arcade"]
-]
-};
+];
+let favs=JSON.parse(localStorage.getItem("favs")||"[]");
 
-function showCategory(cat){
-  let html=`<h2>${cat.toUpperCase()} Games</h2><div class="game-links">`;
-  games[cat].forEach(g=>{
-    html+=`<button onclick="window.open('${g[1]}','_blank')">${g[0]}</button>`;
-  });
-  html+="</div>";
-  panel.innerHTML=html;
+function showGames(){
+let html="<h2>🎮 Games</h2>";
+games.forEach(g=>{
+html+=`<button onclick="openGame('${g[1]}','${g[0]}')">${g[0]}</button>`;
+});
+panel.innerHTML=html+"<br><button onclick='home()'>⬅ Back</button>";
 }
+function openGame(url,name){
+if(!favs.includes(name)&&confirm("Add to favourites?")){favs.push(name);localStorage.setItem("favs",JSON.stringify(favs));}
+window.open(url,"_blank");
+}
+function favourites(){
+panel.innerHTML="<h2>⭐ Favourites</h2>"+(favs.length?favs.map(f=>`<div>${f}</div>`).join(""):"No favourites yet")+"<br><button onclick='home()'>⬅ Back</button>";
+}
+
+/* ========= NAUGHTY / NICE ========= */
+const questions=[
+"Did you help someone this month?","Did you lie recently?",
+"Did you share your snacks?","Did you cheat in a game?",
+"Did you say thank you today?","Did you argue a lot?",
+"Did you help your family?","Did you skip homework?",
+"Did you make someone smile?","Did you break rules?"
+];
+let q=0,score=0;
+function naughtyNice(){
+q=0;score=0;
+ask();
+}
+function ask(){
+if(q>=10){
+panel.innerHTML=`<h2>${score>=6?"😇 NICE":"😈 NAUGHTY"}</h2><button onclick='home()'>Home</button>`;
+return;
+}
+panel.innerHTML=`<h3>${questions[q]}</h3>
+<button onclick="answer(true)">Yes</button>
+<button onclick="answer(false)">No</button>`;
+}
+function answer(good){if(good)score++;q++;ask();}
+
+/* ========= FACTS & JOKES ========= */
+const factsArr=[
+"Santa Tracker was launched by Google in 2004",
+"Christmas trees were first used in Germany",
+"Norway gifts a tree to the UK every year"
+];
+const jokesArr=[
+"Why is Santa so good at karate? He has a black belt!",
+"What do elves learn in school? The elf-abet!",
+"Why did Santa go to music school? To improve his wrapping!"
+];
+function facts(){panel.innerHTML=`<h2>🎲 Fact</h2><p>${factsArr[Math.floor(Math.random()*factsArr.length)]}</p><button onclick='facts()'>Next</button><button onclick='home()'>Home</button>`;}
+function jokes(){panel.innerHTML=`<h2😂 Joke</h2><p>${jokesArr[Math.floor(Math.random()*jokesArr.length)]}</p><button onclick='jokes()'>Next</button><button onclick='home()'>Home</button>`;}
+
+/* ========= EXTRAS ========= */
+function extras(){
+panel.innerHTML=`
+<h2>✨ Extras</h2>
+Snow Intensity <input type="range" min="10" max="150" value="${snowCount}" oninput="snowCount=this.value;makeSnow()"><br><br>
+Snow Emoji:
+<select onchange="snowEmoji=this.value;makeSnow()">
+<option>❄</option><option>⭐</option><option>🎄</option><option>☃</option>
+</select><br><br>
+<canvas id="draw" width="300" height="300"></canvas><br>
+<button onclick="clearCanvas()">Clear</button><br><br>
+Emoji Mixer: <span id="mix"></span><br>
+<button onclick="mixEmoji()">Mix</button><br><br>
+<button onclick="home()">⬅ Back</button>
+`;
+initCanvas();
+mixEmoji();
+}
+function mixEmoji(){
+const e=["🎄","🎅","❄","⭐","🎁","☃"];
+mix.textContent=e[Math.random()*e.length|0]+e[Math.random()*e.length|0]+e[Math.random()*e.length|0];
+}
+
+/* ========= CANVAS ========= */
+let ctx,draw=false;
+function initCanvas(){
+const c=document.getElementById("draw");
+ctx=c.getContext("2d");
+c.onmousedown=()=>draw=true;
+c.onmouseup=()=>draw=false;
+c.onmousemove=e=>{if(draw){ctx.fillRect(e.offsetX,e.offsetY,4,4);}};
+c.ontouchmove=e=>{
+const r=c.getBoundingClientRect();
+ctx.fillRect(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top,4,4);
+};
+}
+function clearCanvas(){ctx.clearRect(0,0,300,300);}
 </script>
 
 </body>
