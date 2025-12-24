@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ramesh Fun Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🔥 Ramesh Fun Hub</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div id="stats"></div>
+
+<div class="hub-buttons">
+  <button onclick="openPanel('games')">🎮 Games</button>
+  <button onclick="openPanel('generators')">⚙️ Generators</button>
+  <button onclick="openPanel('ai')">🤖 AI</button>
+  <button onclick="openPanel('leaderboard')">🏆 Leaderboard</button>
+  <button onclick="openPanel('profile')">👤 Profile</button>
+  <button id="adminBtn" onclick="openPanel('admin')" style="display:none">🛠 Admin</button>
+</div>
+
+<div id="panel"></div>
+
+<footer>
+Made with 💡 & 🤖 by Ramesh Enterprises
+</footer>
+
+<script type="module" src="firebase.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
