@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login – Ramesh Fun Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h1>🎮 Ramesh Fun Hub</h1>
+  <h2>Login</h2>
+
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+
+  <button onclick="login()">Login</button>
+  <button onclick="googleLogin()">Sign in with Google</button>
+
+  <p>
+    New here?
+    <a href="register.html">Create an account</a>
+  </p>
+
+  <p id="authError"></p>
+</div>
+
+<script type="module" src="firebase.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
